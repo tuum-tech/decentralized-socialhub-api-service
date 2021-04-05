@@ -1,0 +1,28 @@
+{
+    "name": "add_user",
+    "allowAnonymousUser": true,
+    "allowAnonymousApp": true,
+    "executable": {
+      "type": "insert",
+      "name": "add_user",
+      "output": true,
+      "body": {
+        "collection": "users",
+        "document": {
+          "did": "$params.did",
+          "accountType": "$params.accountType",
+          "passhash": "$params.passhash",
+          "email": "$params.email",
+          "name": "$params.name",
+          "userToken": "$params.userToken",
+          "code": "$params.code",
+          "isDIDPublished": "$params.isDIDPublished",
+          "onBoardingCompleted": "$params.onBoardingCompleted",
+          "tutorialStep": "$params.tutorialStep",
+          "hiveHost": "$params.hiveHost",
+          "avatar": "$params.avatar",
+          "status": "$params.status"
+        }
+      }
+    }
+  }

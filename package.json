@@ -1,0 +1,44 @@
+{
+  "name": "profile-service-nodejs-api",
+  "version": "1.0.0",
+  "description": "profile service nodejs version",
+  "main": "dist/index.js",
+  "scripts": {
+    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dchagastelles/profile-service-nodejs-api.git"
+  },
+  "author": "Diego Chagastelles",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dchagastelles/profile-service-nodejs-api/issues"
+  },
+  "homepage": "https://github.com/dchagastelles/profile-service-nodejs-api#readme",
+  "dependencies": {
+    "@elastos/elastos-hive-js-sdk": "github:elastos/Elastos.NET.Hive.JS.SDK",
+    "@elastosfoundation/elastos-js-sdk": "^1.2.9",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "googleapis": "^68.0.0",
+    "jwt-decode": "^3.1.2",
+    "node-fetch": "^2.6.1",
+    "node-linkedin": "^0.5.6",
+    "oauth": "^0.9.15"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.10",
+    "@types/express": "^4.17.11",
+    "@types/node-fetch": "^2.5.8",
+    "@types/oauth": "^0.9.1",
+    "tslint": "^6.1.3",
+    "typescript": "^4.2.3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "did": "did:elastos:igZjRKt1HN7toSK3ZPZmNy5NuhfKDhzkUy#primary",
+    "provider": "604f7498597c31665828c317",
+    "validationType": "email",
+    "requestParams":{
+        "email":"r.t@test.com"
+    }
+
+}

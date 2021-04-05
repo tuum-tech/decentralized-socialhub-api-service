@@ -1,0 +1,6 @@
+{
+    "name": "add_user",
+    "params": {
+      "group_id": {"$oid": "600727f9239421f76705a817"}
+    }
+}

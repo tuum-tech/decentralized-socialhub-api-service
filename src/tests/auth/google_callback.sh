@@ -1,0 +1,1 @@
+curl -H "Authorization: profile-api-secret-key"  -G -v http://localhost:8000/v1/auth/google_callback --data-urlencode "code=asdfasdf" --data-urlencode "state=kajsjas"

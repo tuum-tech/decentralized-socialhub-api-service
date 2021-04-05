@@ -1,0 +1,1 @@
+curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: application/json' -H "Accept: application/json" -d @add_user.json http://localhost:8000/v1/tuumvault_router/scripting/set_script
