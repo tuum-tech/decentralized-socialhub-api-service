@@ -39,6 +39,10 @@ app.use("/v1", (req, res, next) => {
   }
 });
 
+app.use('/', (req, res) => {
+   res.send({"server": "Profile API"});
+});
+
 app.use('/v1/tuumvault_router', tuumvaultRouter );
 app.use('/v1/vouch_router', vouchRouter);
 app.use('/v1/assist_router', assistRouter);
