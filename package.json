@@ -1,7 +1,7 @@
 {
-  "name": "profile-service-nodejs-api",
+  "name": "profile-service-api",
   "version": "1.0.0",
-  "description": "profile service nodejs version",
+  "description": "Profile API Service",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dchagastelles/profile-service-nodejs-api.git"
+    "url": "git+https://github.com/tuum-tech/profile-api-service.git"
   },
-  "author": "Diego Chagastelles",
-  "license": "ISC",
+  "author": "Tuum Tech",
+  "license": "GPLv3",
   "bugs": {
-    "url": "https://github.com/dchagastelles/profile-service-nodejs-api/issues"
+    "url": "https://github.com/tuum-tech/profile-api-service/issues"
   },
-  "homepage": "https://github.com/dchagastelles/profile-service-nodejs-api#readme",
+  "homepage": "https://github.com/tuum-tech/profile-api-service#readme",
   "dependencies": {
     "@elastos/elastos-hive-js-sdk": "github:elastos/Elastos.NET.Hive.JS.SDK",
     "@elastosfoundation/elastos-js-sdk": "^1.2.9",
