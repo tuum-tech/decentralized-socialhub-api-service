@@ -11,6 +11,9 @@ import auth from './v1/auth';
 import cors from 'cors';
 import didcredsRouter from './v1/didcreds_router';
 import e from 'express';
+import { codeIsValid, isRegisteredInVault, registerVerifyAttempt, returnSuccess, sendMail } from './v1/commom';
+import { Common } from 'googleapis';
+import crypto from 'crypto';
 
 const app = express();
 
@@ -39,9 +42,6 @@ app.use("/v1", (req, res, next) => {
   }
 });
 
-app.use('/', (req, res) => {
-   res.send({"server": "Profile API"});
-});
 
 app.use('/v1/tuumvault_router', tuumvaultRouter );
 app.use('/v1/vouch_router', vouchRouter);
@@ -49,6 +49,59 @@ app.use('/v1/assist_router', assistRouter);
 app.use('/v1/didcreds_router', didcredsRouter);
 app.use('/v1/auth', auth);
 
+app.post("/v1/create/user", async (req, res) => {
+
+  const code = crypto.randomBytes(16).toString("hex");
+
+  // tslint:disable-next-line:no-console
+  console.log(JSON.stringify(req.body));
+
+  const { email } = req.body;
+  const { name } = req.body;
+
+  const isRegistered = await isRegisteredInVault(email);
+  if (isRegistered === true) {
+
+    // tslint:disable-next-line:no-console
+    console.log('user is registered in our vault')
+    returnSuccess(res, {"return_code": "REGISTERED_USER"});
+  } else {
+    // tslint:disable-next-line:no-console
+    console.log('user is not registered in our vault')
+    registerVerifyAttempt(name, email, code);
+
+    // send email
+    await sendMail(email, code);
+
+    returnSuccess(res, {"return_code": "WAITING_CONFIRMATION"});
+
+  }
+});
+
+// app.post("/v1/forcecreate/user", async (req, res) => {
+
+// });
+
+app.post("/v1/verify/email", async (req, res) =>
+{
+  // tslint:disable-next-line:no-console
+  console.log("Executing: /v1/verify/email")
+
+  const { code } = req.body;
+  const result = codeIsValid(code);
+
+  if (!result){
+    returnSuccess(res,  {"return_code": "CODE_INVALID"});
+
+  }
+  else{
+    returnSuccess(res,  {"return_code": "CODE_CONFIRMED"});
+  }
+});
+
+app.use('/', (req, res) => {
+  res.send({"server": "Profile API"});
+});
 
 app.listen(port, () => {
     // tslint:disable-next-line:no-console
