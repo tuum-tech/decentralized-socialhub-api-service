@@ -168,7 +168,7 @@ export async function sendMail(email : string, code: string){
     const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_SMTP_SERVER,
         port: process.env.EMAIL_SMTP_PORT as any,
-        secure: process.env.EMAIL_SMTP_TLS.toLowerCase() === "false" ? false: true,
+        secure: process.env.EMAIL_SMTP_TLS.toLowerCase() === "false" ? false : true,
         auth: {
             user: process.env.EMAIL_SMTP_USERNAME,
             pass: process.env.EMAIL_SMTP_PASSWORD,
