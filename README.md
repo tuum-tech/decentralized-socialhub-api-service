@@ -16,16 +16,17 @@ cp .env.example .env
 ```
 
 - Modify .env file with your own values
-- [OPTIONAL]: If you want to remove previous mongodb data and start fresh, remove the mongodb directory
+
+- Install dependencies
 
 ```
-rm -rf ~/.tuum-mongodb-data
+npm i
 ```
 
 - Start API server
 
 ```
-./run.sh start
+npm start
 ```
 
 # Verify
