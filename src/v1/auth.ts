@@ -7,11 +7,6 @@ import { google } from 'googleapis';
 import oauth from 'oauth';
 const auth = express.Router();
 
-// a middleware function with no mount path. This code is executed for every request to the router
-// auth.use(function (req, res, next) {
-//     console.log('Time:', Date.now());
-//     next();
-//   });
 
 
 auth.get('/google_request', async (req, res) => {
@@ -85,13 +80,9 @@ auth.get('/facebook_callback', async (req, res) => {
     // tslint:disable-next-line:no-console
     console.info("Executing: /v1/auth/facebook_callback");
 
-    const urlAccessToken = `https://graph.facebook.com/v10.0/oauth/access_token?
-        client_id=${process.env.FACEBOOK_CLIENT_ID}&
-        redirect_uri=${process.env.FACEBOOK_CALLBACK_URL}&
-        client_secret=${process.env.FACEBOOK_CLIENT_SECRET}&
-        code=${req.query.code}`
+    const urlAccessToken = `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${process.env.FACEBOOK_CLIENT_ID}&redirect_uri=${process.env.FACEBOOK_CALLBACK_URL}&client_secret=${process.env.FACEBOOK_CLIENT_SECRET}&code=${req.query.code}`;
 
-    const accessToken = await fetch(urlAccessToken, {
+    const facebookResponse = await fetch(urlAccessToken, {
         method: 'GET',
         headers: {
             "Accepts": "application/json",
@@ -99,9 +90,10 @@ auth.get('/facebook_callback', async (req, res) => {
         }
     })
 
-    // tslint:disable-next-line:no-console
-    console.info(accessToken);
-    returnSuccess(res, accessToken);
+    const responseJson = await facebookResponse.json();
+    const { access_token, expires_in } = responseJson;
+
+    returnSuccess(res, { request_token: access_token, expires_in });
  });
 
 
@@ -207,8 +199,6 @@ auth.get('/linkedin_callback', async (req, res) => {
         "request_token": responseLinkedin.access_token,
         "expires_in": responseLinkedin.expires_in
     }
-
-
 
     returnSuccess(res, result);
  });

@@ -251,8 +251,7 @@ const generateUserVerifiablePresentation = async (appDid: any, user: any, appCha
     const jwt = jwt_decode(appChallenge.challenge) as any;
     const iss = jwt.iss;
     const nonce = jwt.nonce;
-    // tslint:disable-next-line:no-console
-    console.log(`${appDid}  ${userDid} ${appId}`);
+
     const vc = ElastosClient.didDocuments.createVerifiableCredentialVP(appDid, userDid, appId);
     return ElastosClient.didDocuments.createVerifiablePresentation(appDid, "VerifiablePresentation", vc, iss, nonce);
 }
