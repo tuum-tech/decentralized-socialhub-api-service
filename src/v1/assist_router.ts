@@ -37,9 +37,7 @@ assistRouter.get('/didtx/confirmation_id/:confirmation_id', async (req, res) => 
      const url = `${process.env.ASSIST_API_URL}/v1/didtx/confirmation_id/${req.params.confirmation_id}`;
      const ret: any = await handleRoute(url, req.body, getAssistHeader(), false);
 
-     // tslint:disable-next-line:no-console
-     console.log(`Return: ${JSON.stringify(ret)}`);
-
+   
      returnSuccess(res, ret);
 });
 
