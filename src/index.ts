@@ -11,7 +11,7 @@ import auth from './v1/auth';
 import cors from 'cors';
 import didcredsRouter from './v1/didcreds_router';
 import e from 'express';
-import { codeIsValid, isRegisteredInVault, registerVerifyAttempt, returnSuccess, sendMail } from './v1/commom';
+import { getUser, isRegisteredInVault, registerVerifyAttempt, returnSuccess, sendMail } from './v1/commom';
 import { Common } from 'googleapis';
 import crypto from 'crypto';
 
@@ -88,14 +88,15 @@ app.post("/v1/verify/email", async (req, res) =>
   console.log("Executing: /v1/verify/email")
 
   const { code } = req.body;
-  const result = codeIsValid(code);
+  const result : any = await getUser(code);
 
-  if (!result){
+  if (result === undefined){
     returnSuccess(res,  {"return_code": "CODE_INVALID"});
 
   }
   else{
-    returnSuccess(res,  {"return_code": "CODE_CONFIRMED"});
+ 
+    returnSuccess(res,  {"return_code": "CODE_CONFIRMED", "email": result.email, "name": result.name });
   }
 });
 

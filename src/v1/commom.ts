@@ -119,7 +119,7 @@ export function isTuumApi(serviceResponse : any) {
     }
 }
 
-export async function codeIsValid(code: string): Promise<boolean> {
+export async function getUser(code: string): Promise<any | undefined> {
 
     const hiveClient = await getHiveClient();
     const script = {
@@ -136,9 +136,17 @@ export async function codeIsValid(code: string): Promise<boolean> {
     const { items } = find_code;
 
     // tslint:disable-next-line:no-console
-    console.log(JSON.stringify(items));
+    console.log(JSON.stringify(items[0]));
 
-    return items.length > 0;
+
+
+    if (items.length === 0){
+        return undefined;
+    }
+
+    const {loginCred, name} = items[0];
+
+    return { "email": loginCred, "name": name};
 }
 
 export async function isRegisteredInVault(email: string) : Promise<boolean> {
@@ -147,15 +155,16 @@ export async function isRegisteredInVault(email: string) : Promise<boolean> {
     const script = {
         "name": "get_users_by_email",
         "params": {
-           "email": email
+           "filter": email
         }
     }
 
     const runScriptResponse : IRunScriptResponse<any> =  await hiveClient.Scripting.RunScript<any>(script as IRunScriptData);
 
+     
     const { response } = runScriptResponse;
-    const { get_users_by_email} = response;
-    const { items } = get_users_by_email;
+    const { users_found } = response;
+    const { items } = users_found;
 
     // tslint:disable-next-line:no-console
     console.log(JSON.stringify(items));
@@ -197,7 +206,7 @@ export async function registerVerifyAttempt(name:string, email: string, code: st
         "name": "add_user",
         "params": {
             "name": name,
-            "email": email,
+            "loginCred": email,
             "status": 'WAITING_CONFIRMATION',
             "code": code,
             "did": "",
