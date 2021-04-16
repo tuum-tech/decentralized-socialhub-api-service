@@ -2,16 +2,15 @@ import express, { request, urlencoded } from 'express';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import bodyParser from 'body-parser';
-import { ElastosClient } from '@elastosfoundation/elastos-js-sdk';
-import jwt_decode from 'jwt-decode';
 import tuumvaultRouter from './v1/tuumvault_router';
+import tuumtech from './v1/tuumtech';
 import vouchRouter from './v1/vouch_router';
 import assistRouter from './v1/assist_router';
 import auth from './v1/auth';
 import cors from 'cors';
 import didcredsRouter from './v1/didcreds_router';
 import e from 'express';
-import { getUser, isRegisteredInVault, registerVerifyAttempt, returnSuccess, sendMail } from './v1/commom';
+import { getUser, isRegisteredInVault, registerVerifyAttempt, returnSuccess, sendCreateUserVerificationEmail, sendMail } from './v1/commom';
 import { Common } from 'googleapis';
 import crypto from 'crypto';
 
@@ -48,6 +47,7 @@ app.use('/v1/vouch_router', vouchRouter);
 app.use('/v1/assist_router', assistRouter);
 app.use('/v1/didcreds_router', didcredsRouter);
 app.use('/v1/auth', auth);
+app.use('/v1/tuumtech', tuumtech);
 
 app.post("/v1/create/user", async (req, res) => {
 
@@ -71,7 +71,7 @@ app.post("/v1/create/user", async (req, res) => {
     registerVerifyAttempt(name, email, code);
 
     // send email
-    await sendMail(email, code);
+    await sendCreateUserVerificationEmail(email, code);
 
     returnSuccess(res, {"return_code": "WAITING_CONFIRMATION"});
 
@@ -95,7 +95,7 @@ app.post("/v1/verify/email", async (req, res) =>
 
   }
   else{
- 
+
     returnSuccess(res,  {"return_code": "CODE_CONFIRMED", "email": result.email, "name": result.name });
   }
 });
