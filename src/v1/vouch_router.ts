@@ -80,7 +80,7 @@ vouchRouter.get('/services/provider_did/:provider_did', async (req, res) => {
 
 vouchRouter.post('/validationtx/create', async (req, res) => {
     // tslint:disable-next-line:no-console
-    console.info("Executing: /v1/vouch_router/validationtx/create");
+    console.info(`Executing: /v1/vouch_router/validationtx/create ${JSON.stringify(req.body)}`);
 
     const url = `${process.env.VOUCH_API_URL}/v1/validationtx/create`;
     const ret: any = await handleRoute(url, req.body, getVouchHeader(), true);
@@ -89,6 +89,20 @@ vouchRouter.post('/validationtx/create', async (req, res) => {
     console.log(`Return: ${JSON.stringify(ret)}`);
 
     returnSuccess(res, ret);
+
+});
+
+vouchRouter.post('/contact', async (req, res) => {
+    // tslint:disable-next-line:no-console
+    console.info(`Executing: /v1/vouch_router/contact ${JSON.stringify(req.body)}`);
+
+    // const url = `${process.env.VOUCH_API_URL}/v1/validationtx/create`;
+    // const ret: any = await handleRoute(url, req.body, getVouchHeader(), true);
+
+    // // tslint:disable-next-line:no-console
+    // console.log(`Return: ${JSON.stringify(ret)}`);
+
+    returnSuccess(res, {});
 
 });
 
