@@ -32,7 +32,9 @@
     "node-fetch": "^2.6.1",
     "node-linkedin": "^0.5.6",
     "nodemailer": "^6.5.0",
-    "oauth": "^0.9.15"
+    "oauth": "^0.9.15",
+    "tslint": "^6.1.3",
+    "typescript": "^4.2.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
@@ -44,9 +46,7 @@
     "eslint-config-airbnb": "^18.2.1",
     "husky": "^6.0.0",
     "lint-staged": "^10.5.4",
-    "prettier": "^2.2.1",
-    "tslint": "^6.1.3",
-    "typescript": "^4.2.3"
+    "prettier": "^2.2.1"
   },
   "husky": {
     "hooks": {
@@ -58,5 +58,8 @@
       "prettier --write",
       "eslint --fix"
     ]
+  },
+  "engines": {
+    "node": "12.21.0"
   }
 }
