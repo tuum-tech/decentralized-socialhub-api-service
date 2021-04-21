@@ -35,7 +35,9 @@ tuumtech.post('/support', async (req, res) => {
 
     await sendMail(from, `[${feedback_type}] ${subject}`, process.env.EMAIL_SUPPORT, text, html);
 
-    returnSuccess(res, {});
+
+
+    returnSuccess(res, {})
 });
 
 
