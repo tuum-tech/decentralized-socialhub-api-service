@@ -194,3 +194,10 @@ curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: applic
 ```
 curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: application/json' -H "Accept: application/json" -d '{"did": "did:elastos:iouMSXKHNcwdbPzb58pXpmGBDBxrMzfq2c", "credential_type": "type", "credential_value": "value"}' http://localhost:8082/v1/didcreds_router/validation/internet_account
 ```
+
+## Deploy it on Google Cloud Engine
+
+- Copy app.sample.yaml to app.yaml and modify the environment variables to your own setting
+- Deploy: `gcloud app deploy`
+- Check out the logs: `gcloud app logs tail -s default`
+- View your app in the web browser: `gcloud app browse`
