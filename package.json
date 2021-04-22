@@ -4,7 +4,6 @@
   "description": "Profile API Service",
   "main": "dist/index.js",
   "scripts": {
-    "rimraf": "./node_modules/rimraf/bin.js",
     "clean": "rimraf dist/*",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "tsc": "tsc",
