@@ -1,7 +1,6 @@
-import express, { request, urlencoded } from "express";
+import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
-import bodyParser from "body-parser";
 import tuumvaultRouter from "./v1/tuumvault_router";
 import tuumtech from "./v1/tuumtech";
 import vouchRouter from "./v1/vouch_router";
@@ -9,16 +8,13 @@ import assistRouter from "./v1/assist_router";
 import auth from "./v1/auth";
 import cors from "cors";
 import didcredsRouter from "./v1/didcreds_router";
-import e from "express";
 import {
   getUser,
   isRegisteredInVault,
   registerVerifyAttempt,
   returnSuccess,
   sendCreateUserVerificationEmail,
-  sendMail,
 } from "./v1/commom";
-import { Common } from "googleapis";
 import crypto from "crypto";
 
 dotenv.config();
@@ -27,9 +23,15 @@ const app = express();
 
 const port = process.env.SERVER_PORT || 8080;
 
-app.use(bodyParser.json({ limit: '5mb'}));
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(cors({origin: true}));
+app.use(express.json({ limit: "32mb" }));
+app.use(
+  express.urlencoded({
+    limit: "32mb",
+    extended: true,
+    parameterLimit: 1000000,
+  })
+);
+app.use(cors({ origin: true }));
 
 if (!globalThis.fetch) {
   globalThis.fetch = fetch as any;
