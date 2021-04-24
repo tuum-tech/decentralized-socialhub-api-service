@@ -17,11 +17,16 @@ export interface TuumTechResponse {
   data: any;
 }
 
-export function returnSuccess(res: any, data: any) {
-  res.send({
+export function returnSuccess(res: any, dataContent: any) {
+  const returned = {
     meta: { code: 200, message: "OK" },
-    data,
-  });
+    data: dataContent
+  }
+
+  // tslint:disable-next-line:no-console
+  // console.log(JSON.stringify(returned));
+
+  res.send(returned);
 }
 
 export async function handleHiveResponse(serviceResponse: any) {
@@ -177,7 +182,8 @@ export async function sendMail(
   subject: string,
   to: string,
   text: string,
-  html: string
+  html: string,
+  attachments?: any
 ) {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_SMTP_SERVER,
@@ -194,6 +200,7 @@ export async function sendMail(
       process.env.EMAIL_SMTP_TLS.toLowerCase() === "false" ? false : true,
   });
 
+
   // send mail with defined transport object
   const info = await transporter.sendMail({
     from, // sender address
@@ -201,6 +208,7 @@ export async function sendMail(
     subject, // Subject line
     text, // plain text body
     html, // html body
+    attachments
   });
 
   // tslint:disable-next-line:no-console

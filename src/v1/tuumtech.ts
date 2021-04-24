@@ -15,7 +15,7 @@ tuumtech.post('/contact', async (req, res) => {
     const text = description;
     const html = description;
 
-    await sendMail(from, `[Contact] ${subject}`, process.env.EMAIL_SUPPORT, text, html);
+    await sendMail(from, `[Contact Us] ${subject}`, process.env.EMAIL_CONTACT, text, html);
 
     returnSuccess(res, {});
 });
@@ -33,7 +33,7 @@ tuumtech.post('/support', async (req, res) => {
 
     const html = `<h3>${feedback_type} :</h3><p>${comments}</p>`;
 
-    await sendMail(from, `[${feedback_type}] ${subject}`, process.env.EMAIL_SUPPORT, text, html);
+    await sendMail(from, `[${feedback_type}] ${subject}`, process.env.EMAIL_SUPPORT, text, html, attachments);
 
 
 
