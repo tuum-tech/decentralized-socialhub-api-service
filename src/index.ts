@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import tuumvaultRouter from "./v1/tuumvault_router";
-import tuumtech from "./v1/tuumtech";
+import supportRouter from "./v1/support_router";
 import vouchRouter from "./v1/vouch_router";
 import assistRouter from "./v1/assist_router";
 import auth from "./v1/auth";
@@ -63,7 +63,7 @@ app.use("/v1/vouch_router", vouchRouter);
 app.use("/v1/assist_router", assistRouter);
 app.use("/v1/didcreds_router", didcredsRouter);
 app.use("/v1/auth", auth);
-app.use("/v1/tuumtech", tuumtech);
+app.use("/v1/support_router", supportRouter);
 
 app.post("/v1/create/user", async (req, res) => {
   const code = crypto.randomBytes(16).toString("hex");

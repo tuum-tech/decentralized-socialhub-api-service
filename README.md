@@ -195,6 +195,14 @@ curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: applic
 curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: application/json' -H "Accept: application/json" -d '{"did": "did:elastos:iouMSXKHNcwdbPzb58pXpmGBDBxrMzfq2c", "credential_type": "type", "credential_value": "value"}' http://localhost:8082/v1/didcreds_router/validation/internet_account
 ```
 
+## Interact with Support API
+
+- To send an email:
+
+```
+curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: application/json' -H "Accept: application/json" -d '{"subject": "your subject", "description": "your description"}' http://localhost:8082/v1/support_router/send_email
+```
+
 ## Deploy it on Google Cloud Engine
 
 - Copy app.sample.yaml to app.yaml and modify the environment variables to your own setting
