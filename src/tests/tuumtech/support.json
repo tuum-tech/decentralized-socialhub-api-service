@@ -3,5 +3,9 @@
     "feedback_type": "suggestion",
     "from":"dchagastelles@gmail.com",
     "comments": "Should have badges!",
-    "attachments": ""
+    "attachments": 
+        {
+            "name": 
+        }
+    }
 }
