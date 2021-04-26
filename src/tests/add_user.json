@@ -12,7 +12,7 @@
           "did": "$params.did",
           "accountType": "$params.accountType",
           "passhash": "$params.passhash",
-          "email": "$params.email",
+          "loginCred": "$params.loginCred",
           "name": "$params.name",
           "userToken": "$params.userToken",
           "code": "$params.code",
