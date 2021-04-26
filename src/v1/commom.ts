@@ -150,7 +150,7 @@ export async function getUser(code: string): Promise<any | undefined> {
 
   const { loginCred, name } = items[0];
 
-  return { email: loginCred, name };
+  return { email: loginCred.email, name };
 }
 
 export async function isRegisteredInVault(email: string): Promise<boolean> {
@@ -235,10 +235,12 @@ export async function registerVerifyAttempt(
     name: "add_user",
     params: {
       name,
-      loginCred: email,
+      did: '',
+      loginCred: {
+        email
+      },
       status: "WAITING_CONFIRMATION",
       code,
-      did: "",
       accountType: "",
       passhash: "",
       userToken: "",
