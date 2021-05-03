@@ -5,7 +5,7 @@ import { getHiveClient, getNonAnonymousClient } from "../v1/commom";
 
 export function scheduleUsersCleanUp() {
 
-    cron.schedule('*/10 * * * *', async () => {
+    cron.schedule('0 * * * *', async () => {
         // tslint:disable-next-line:no-console
         console.log('Running user cleanup');
 
