@@ -9,13 +9,15 @@ import auth from "./v1/auth";
 import cors from "cors";
 import didcredsRouter from "./v1/didcreds_router";
 import {
+  getHiveClient,
   getUser,
-  isRegisteredInVault,
   registerVerifyAttempt,
   returnSuccess,
   sendCreateUserVerificationEmail,
 } from "./v1/commom";
 import crypto from "crypto";
+import { scheduleUsersCleanUp } from "./scheduler/user-cleanup";
+import cron from "node-cron";
 
 dotenv.config();
 
@@ -71,25 +73,7 @@ app.post("/v1/create/user", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log(JSON.stringify(req.body));
 
-  // const { email } = req.body;
-  // const { name } = req.body;
-
-  // const isRegistered = await isRegisteredInVault(email);
-  // if (isRegistered === true) {
-  //   // tslint:disable-next-line:no-console
-  //   console.log("user is registered in our vault");
-  //   returnSuccess(res, { return_code: "REGISTERED_USER" });
-  // } else {
-  //   // tslint:disable-next-line:no-console
-  //   console.log("user is not registered in our vault");
-  //   registerVerifyAttempt(name, email, code);
-
-  //   // send email
-  //   await sendCreateUserVerificationEmail(email, code);
-
-  //   returnSuccess(res, { return_code: "WAITING_CONFIRMATION" });
-  // }
-  const { email, name } = req.body;
+   const { email, name } = req.body;
   registerVerifyAttempt(name, email, code);
   // send email
   await sendCreateUserVerificationEmail(email, code);
@@ -122,7 +106,14 @@ app.use("/", (req, res) => {
   res.send({ server: "Profile API" });
 });
 
+
+
+
 app.listen(port, () => {
   // tslint:disable-next-line:no-console
   console.log(`Profile Api Service listening on port ${port}!`);
+
+  scheduleUsersCleanUp();
+
+
 });

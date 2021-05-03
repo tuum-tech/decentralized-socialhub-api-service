@@ -305,11 +305,13 @@ export async function registerVerifyAttempt(
         }
       },
       userToken: "",
+      badges: "",
       isDIDPublished: "",
       onBoardingCompleted: "",
       tutorialStep: "",
       hiveHost: "",
       avatar: "",
+      timestamp: Date.now()
     },
   };
 
