@@ -13,6 +13,7 @@
           "accountType": "$params.accountType",
           "passhash": "$params.passhash",
           "loginCred": "$params.loginCred",
+          "badges": "$params.badges",
           "name": "$params.name",
           "userToken": "$params.userToken",
           "code": "$params.code",
