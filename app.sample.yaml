@@ -34,6 +34,7 @@ EMAIL_SMTP_USERNAME: "support@example.com"
 EMAIL_SMTP_PASSWORD: "password"
 EMAIL_SMTP_PORT: 587
 EMAIL_SMTP_TLS: True
+EMAIL_CONTACT: "contact@tuum.tech"
 
 manual_scaling:
   instances: 2
