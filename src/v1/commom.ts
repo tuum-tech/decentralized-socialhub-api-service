@@ -305,7 +305,6 @@ export async function registerVerifyAttempt(
         }
       },
       userToken: "",
-      badges: "",
       isDIDPublished: "",
       onBoardingCompleted: "",
       tutorialStep: "",
