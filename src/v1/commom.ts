@@ -310,6 +310,7 @@ export async function registerVerifyAttempt(
       tutorialStep: "",
       hiveHost: "",
       avatar: "",
+      timestamp: Date.now()
     },
   };
 
