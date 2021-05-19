@@ -41,7 +41,7 @@ supportRouter.post("/github/:owner/:repos/issues", async (req, res) => {
 
   const fetchResponse = await fetch(`https://api.github.com/repos/${req.params.owner}/${req.params.repos}/issues`, postData);
   const response = await fetchResponse.json();
-  
+
   returnSuccess(res, response);
 });
 
