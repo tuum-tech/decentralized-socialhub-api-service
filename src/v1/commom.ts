@@ -29,6 +29,18 @@ export function returnSuccess(res: any, dataContent: any) {
   res.send(returned);
 }
 
+export function returnError(res: any, dataContent: any) {
+  const returned = {
+    meta: { code: 500, message: "Internal Error" },
+    data: dataContent
+  }
+
+  // tslint:disable-next-line:no-console
+  // console.log(JSON.stringify(returned));
+
+  res.send(returned);
+}
+
 export async function handleHiveResponse(serviceResponse: any) {
   const status = serviceResponse._status;
   let profileApiResponse: any;
@@ -225,6 +237,105 @@ export async function sendCreateUserVerificationEmail(
   sendMail(process.env.EMAIL_SENDER, subject, email, text, html);
 }
 
+export async function registerUpdateVerifyAttempt(
+  email: string,
+  code: string
+) {
+  const hiveClient = await getNonAnonymousClient();
+  const script = {
+    name: "update_user",
+    params: {
+      name,
+      did: '',
+      loginCred: {
+        email
+      },
+      status: "WAITING_CONFIRMATION",
+      code,
+      accountType: "",
+      passhash: "",
+      badges: {
+        account: {
+          beginnerTutorial: {
+            archived: false
+          },
+          basicProfile: {
+            archived: false
+          },
+          educationProfile: {
+            archived: false
+          },
+          experienceProfile: {
+            archived: false
+          }
+        },
+        socialVerify: {
+          linkedin: {
+            archived: false
+          },
+          facebook: {
+            archived: false
+          },
+          twitter: {
+            archived: false
+          },
+          google: {
+            archived: false
+          },
+          email: {
+            archived: false
+          },
+          phone: {
+            archived: false
+          }
+        },
+        didPublishTimes: {
+          _1times: {
+            archived: false
+          },
+          _5times: {
+            archived: false
+          },
+          _10times: {
+            archived: false
+          },
+          _25times: {
+            archived: false
+          },
+          _50times: {
+            archived: false
+          },
+          _100times: {
+            archived: false
+          }
+        },
+        dStorage: {
+          ownVault: {
+            archived: false
+          }
+        }
+      },
+      userToken: "",
+      isDIDPublished: "",
+      onBoardingCompleted: "",
+      tutorialStep: "",
+      hiveHost: "",
+      avatar: "",
+      timestamp: Date.now()
+    },
+  };
+
+  const runScriptResponse: IRunScriptResponse<any> = await hiveClient.Scripting.RunScript<any>(
+    script as IRunScriptData
+  );
+
+  const { response } = runScriptResponse;
+
+  // tslint:disable-next-line:no-console
+  console.log(JSON.stringify(response));
+}
+
+
 export async function registerVerifyAttempt(
   name: string,
   email: string,
@@ -243,6 +354,7 @@ export async function registerVerifyAttempt(
       code,
       accountType: "",
       passhash: "",
+      didPublishTime: 0,
       badges: {
         account: {
           beginnerTutorial: {

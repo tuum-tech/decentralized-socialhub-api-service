@@ -1,0 +1,1 @@
+curl -XPOST -H "Content-Type: application/json" -H "Authorization: profile-api-secret-key" -d '{ "email" : "dchagastelles+5@gmail.com" }' http://localhost:8082/v1/send/verify/email

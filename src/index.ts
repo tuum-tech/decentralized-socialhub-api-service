@@ -12,6 +12,7 @@ import {
   getHiveClient,
   getUser,
   registerVerifyAttempt,
+  returnError,
   returnSuccess,
   sendCreateUserVerificationEmail,
 } from "./v1/commom";
@@ -80,9 +81,40 @@ app.post("/v1/create/user", async (req, res) => {
   returnSuccess(res, { return_code: "WAITING_CONFIRMATION" });
 });
 
-// app.post("/v1/forcecreate/user", async (req, res) => {
+// Todo: extract those endpoints in separate router
 
-// });
+app.post("/v1/update/email", async (req, res) => {
+  // tslint:disable-next-line:no-console
+  console.log("Executing: /update/email");
+
+  // 1) receive old_mail, new_mail
+  const { old_email, new_email } = req.body;
+  
+  // 2) generate new code 
+  const code = crypto.randomBytes(16).toString("hex");
+  
+  
+  // ***************** TODO
+  // 3) Use old_mail to search for the user and update (I believe we will need a new script to to that)
+  //     3.a) logincred.email
+  //     3.b) status: 'WAITING_CONFIRMATION'
+  //     3.c) code: code generated
+
+  try {
+
+    await sendCreateUserVerificationEmail(new_email, code);
+    returnSuccess(res, {
+      new_email,
+      name: code,
+    });
+  } catch(e){
+    returnError(res, {
+      messgae: JSON.stringify(e),
+    });
+  }
+
+});
+
 
 app.post("/v1/verify/email", async (req, res) => {
   // tslint:disable-next-line:no-console
