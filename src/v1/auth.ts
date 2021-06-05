@@ -5,8 +5,8 @@ import jwt_decode from 'jwt-decode';
 import { handleRoute, returnSuccess } from './commom';
 import { google } from 'googleapis';
 import oauth from 'oauth';
-const auth = express.Router();
 
+const auth = express.Router();
 
 
 auth.get('/google_request', async (req, res) => {
@@ -230,6 +230,61 @@ auth.get('/linkedin_callback', async (req, res) => {
         "profile": responseLinkedin
     }
     returnSuccess(res, result);
+
+});
+
+
+auth.get("/github_request", async (req, res) => {
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/github_request");
+
+    const url = `https://github.com/login/oauth/authorize?scope=user&client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_CALLBACK_URL}`;
+    returnSuccess(res, url);
+});
+
+auth.get("/github_callback", async (req, res) => {
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/github_callback");
+
+    // tslint:disable-next-line:no-console
+    console.info(`code: ${req.query.code}`);
+
+    // linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results)
+    const params = new URLSearchParams({
+        "code": req.query.code as string,
+        "redirect_uri": process.env.GITHUB_CALLBACK_URL,
+        "client_id": process.env.GITHUB_CLIENT_ID,
+        "client_secret": process.env.GITHUB_CLIENT_SECRET
+    });
+
+    // Request to exchange code for an access token
+    const accesTokenRequest = await fetch(`https://github.com/login/oauth/access_token`, {
+      method: "POST",
+      headers: {
+        "Accepts": "application-json",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: params.toString()
+    });
+
+    const accessTokenResponse = await accesTokenRequest.text();
+
+    const p = new URLSearchParams(accessTokenResponse);
+    const accessToken = p.get("access_token");
+
+    // Request to exchange code for an access token
+    const userRequest = await fetch(`https://api.github.com/user`, {
+        method: "GET",
+        headers: {
+            "Accepts": "application-json",
+            "Authorization": `token ${accessToken}`
+        }
+    });
+
+    const userResponse = await userRequest.json();
+
+    returnSuccess(res, userResponse);
+
 
 });
 

@@ -89,11 +89,11 @@ app.post("/v1/update/email", async (req, res) => {
 
   // 1) receive old_mail, new_mail
   const { old_email, new_email } = req.body;
-  
-  // 2) generate new code 
+
+  // 2) generate new code
   const code = crypto.randomBytes(16).toString("hex");
-  
-  
+
+
   // ***************** TODO
   // 3) Use old_mail to search for the user and update (I believe we will need a new script to to that)
   //     3.a) logincred.email
