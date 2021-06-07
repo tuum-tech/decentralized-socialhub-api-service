@@ -246,9 +246,6 @@ auth.get("/github_callback", async (req, res) => {
     // tslint:disable-next-line:no-console
     console.info("Executing: /v1/auth/github_callback");
 
-    // tslint:disable-next-line:no-console
-    console.info(`code: ${req.query.code}`);
-
     // linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results)
     const params = new URLSearchParams({
         "code": req.query.code as string,
@@ -304,9 +301,6 @@ auth.get("/discord_callback", async (req, res) => {
     // tslint:disable-next-line:no-console
     console.info("Executing: /v1/auth/discord_callback");
 
-    // tslint:disable-next-line:no-console
-    console.info(`code: ${req.query.code}`);
-
     // linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results)
     const params = new URLSearchParams({
         "code": req.query.code as string,
@@ -330,9 +324,6 @@ auth.get("/discord_callback", async (req, res) => {
 
 
     const accessToken = accessTokenResponse.access_token;
-
-      // tslint:disable-next-line:no-console
-      console.info(`access token: ${accessToken}`);
 
     // Request to exchange code for an access token
     const userRequest = await fetch(`http://discordapp.com/api/users/@me`, {
