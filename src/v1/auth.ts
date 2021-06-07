@@ -246,9 +246,6 @@ auth.get("/github_callback", async (req, res) => {
     // tslint:disable-next-line:no-console
     console.info("Executing: /v1/auth/github_callback");
 
-    // tslint:disable-next-line:no-console
-    console.info(`code: ${req.query.code}`);
-
     // linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results)
     const params = new URLSearchParams({
         "code": req.query.code as string,
@@ -288,5 +285,60 @@ auth.get("/github_callback", async (req, res) => {
 
 });
 
+
+
+auth.get("/discord_request", async(req,res) => {
+
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/discord_request");
+
+    const url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${process.env.DISCORD_CLIENT_ID}&scope=identify&redirect_uri=${process.env.DISCORD_CALLBACK_URL}&prompt=consent`;
+    returnSuccess(res, url);
+
+});
+
+auth.get("/discord_callback", async (req, res) => {
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/discord_callback");
+
+    // linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results)
+    const params = new URLSearchParams({
+        "code": req.query.code as string,
+        "redirect_uri": process.env.DISCORD_CALLBACK_URL,
+        "grant_type": "authorization_code",
+        "client_id": process.env.DISCORD_CLIENT_ID,
+        "client_secret": process.env.DISCORD_CLIENT_SECRET
+    });
+
+    // Request to exchange code for an access token
+    const accesTokenRequest = await fetch(`https://discord.com/api/v8/oauth2/token`, {
+      method: "POST",
+      headers: {
+        "Accepts": "application-json",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: params.toString()
+    });
+
+    const accessTokenResponse = await accesTokenRequest.json();
+
+
+    const accessToken = accessTokenResponse.access_token;
+
+    // Request to exchange code for an access token
+    const userRequest = await fetch(`http://discordapp.com/api/users/@me`, {
+        method: "GET",
+        headers: {
+            "Accepts": "application-json",
+            "Authorization": `Bearer ${accessToken}`
+        }
+    });
+
+    const userResponse = await userRequest.json();
+
+    returnSuccess(res, userResponse);
+
+
+});
 
 export default auth;
