@@ -67,7 +67,7 @@ vouchRouter.get('/services/provider_did/:provider_did', async (req, res) => {
     console.info("Executing: /v1/vouch_router/provider_did/{provider_did}");
 
     // tslint:disable-next-line:no-console
-    console.info(req.params.validation_type);
+    // console.info(req.params.validation_type);
 
     const url = `${process.env.VOUCH_API_URL}/v1/provider_did/${req.params.provider_did}`;
     const ret: any = await handleRoute(url, req.body, getVouchHeader(), false);
