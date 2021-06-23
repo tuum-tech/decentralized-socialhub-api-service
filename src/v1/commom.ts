@@ -237,6 +237,16 @@ export async function sendCreateUserVerificationEmail(
   sendMail(process.env.EMAIL_SENDER, subject, email, text, html);
 }
 
+export async function sendCreateUserVerificationEmailUpdate(
+  email: string,
+  code: string
+) {
+  const subject = "Profile Email Update verification";
+  const text = `Please click on the following link ${process.env.EMAIL_UPDATE_CALLBACK}/${code} to confirm email update`;
+  const html = `Please click on the following link <a href=${process.env.EMAIL_UPDATE_CALLBACK}/${code}>Validate</a> to confirm email update`;
+  sendMail(process.env.EMAIL_SENDER, subject, email, text, html);
+}
+
 export async function registerUpdateVerifyAttempt(
   email: string,
   code: string
@@ -334,6 +344,31 @@ export async function registerUpdateVerifyAttempt(
   // tslint:disable-next-line:no-console
   console.log(JSON.stringify(response));
 }
+
+export async function registerUpdateAttempt(
+  oldEmail: string,
+  newEmail: string,
+  code: string){
+
+    const hiveClient = await getNonAnonymousClient();
+    const script = {
+      name: "update_verify_user",
+      params: {
+        oldEmail,
+        newEmail,
+        code
+      }
+    }
+
+    const runScriptResponse: IRunScriptResponse<any> = await hiveClient.Scripting.RunScript<any>(
+      script as IRunScriptData
+    );
+
+    const { response } = runScriptResponse;
+
+    // tslint:disable-next-line:no-console
+    console.log(JSON.stringify(response));
+  }
 
 
 export async function registerVerifyAttempt(
