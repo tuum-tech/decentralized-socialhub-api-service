@@ -5,8 +5,8 @@ import jwt_decode from 'jwt-decode';
 import { handleRoute, returnSuccess } from './commom';
 import { google } from 'googleapis';
 import oauth from 'oauth';
-const auth = express.Router();
 
+const auth = express.Router();
 
 
 auth.get('/google_request', async (req, res) => {
@@ -233,5 +233,112 @@ auth.get('/linkedin_callback', async (req, res) => {
 
 });
 
+
+auth.get("/github_request", async (req, res) => {
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/github_request");
+
+    const url = `https://github.com/login/oauth/authorize?scope=user&client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_CALLBACK_URL}`;
+    returnSuccess(res, url);
+});
+
+auth.get("/github_callback", async (req, res) => {
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/github_callback");
+
+    // linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results)
+    const params = new URLSearchParams({
+        "code": req.query.code as string,
+        "redirect_uri": process.env.GITHUB_CALLBACK_URL,
+        "client_id": process.env.GITHUB_CLIENT_ID,
+        "client_secret": process.env.GITHUB_CLIENT_SECRET
+    });
+
+    // Request to exchange code for an access token
+    const accesTokenRequest = await fetch(`https://github.com/login/oauth/access_token`, {
+      method: "POST",
+      headers: {
+        "Accepts": "application-json",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: params.toString()
+    });
+
+    const accessTokenResponse = await accesTokenRequest.text();
+
+    const p = new URLSearchParams(accessTokenResponse);
+    const accessToken = p.get("access_token");
+
+    // Request to exchange code for an access token
+    const userRequest = await fetch(`https://api.github.com/user`, {
+        method: "GET",
+        headers: {
+            "Accepts": "application-json",
+            "Authorization": `token ${accessToken}`
+        }
+    });
+
+    const userResponse = await userRequest.json();
+
+    returnSuccess(res, userResponse);
+
+
+});
+
+
+
+auth.get("/discord_request", async(req,res) => {
+
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/discord_request");
+
+    const url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${process.env.DISCORD_CLIENT_ID}&scope=identify&redirect_uri=${process.env.DISCORD_CALLBACK_URL}&prompt=consent`;
+    returnSuccess(res, url);
+
+});
+
+auth.get("/discord_callback", async (req, res) => {
+    // tslint:disable-next-line:no-console
+    console.info("Executing: /v1/auth/discord_callback");
+
+    // linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results)
+    const params = new URLSearchParams({
+        "code": req.query.code as string,
+        "redirect_uri": process.env.DISCORD_CALLBACK_URL,
+        "grant_type": "authorization_code",
+        "client_id": process.env.DISCORD_CLIENT_ID,
+        "client_secret": process.env.DISCORD_CLIENT_SECRET
+    });
+
+    // Request to exchange code for an access token
+    const accesTokenRequest = await fetch(`https://discord.com/api/v8/oauth2/token`, {
+      method: "POST",
+      headers: {
+        "Accepts": "application-json",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: params.toString()
+    });
+
+    const accessTokenResponse = await accesTokenRequest.json();
+
+
+    const accessToken = accessTokenResponse.access_token;
+
+    // Request to exchange code for an access token
+    const userRequest = await fetch(`http://discordapp.com/api/users/@me`, {
+        method: "GET",
+        headers: {
+            "Accepts": "application-json",
+            "Authorization": `Bearer ${accessToken}`
+        }
+    });
+
+    const userResponse = await userRequest.json();
+
+    returnSuccess(res, userResponse);
+
+
+});
 
 export default auth;

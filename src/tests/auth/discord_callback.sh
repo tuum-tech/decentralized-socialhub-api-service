@@ -1,0 +1,1 @@
+curl -H "Authorization: profile-api-secret-key" -G -v http://localhost:8082/v1/auth/discord_callback --data-urlencode "code=qgfUGARMTI7piUbuWLDgrEIKHNcwjH"

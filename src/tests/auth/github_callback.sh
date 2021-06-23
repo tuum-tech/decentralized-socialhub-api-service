@@ -1,0 +1,1 @@
+curl -H "Authorization: profile-api-secret-key" -G -v http://localhost:8082/v1/auth/github_callback --data-urlencode "code=520297001f30b80dd0c6"
