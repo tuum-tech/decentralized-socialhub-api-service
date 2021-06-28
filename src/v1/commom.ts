@@ -346,7 +346,7 @@ export async function registerUpdateVerifyAttempt(
 }
 
 export async function registerUpdateAttempt(
-  oldEmail: string,
+  did: string,
   newEmail: string,
   code: string){
 
@@ -354,7 +354,7 @@ export async function registerUpdateAttempt(
     const script = {
       name: "update_verify_user",
       params: {
-        oldEmail,
+        did,
         newEmail,
         code
       }

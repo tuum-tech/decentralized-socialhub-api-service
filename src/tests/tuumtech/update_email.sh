@@ -1,1 +1,1 @@
-curl -XPOST -H "Content-Type: application/json" -H "Authorization: profile-api-secret-key" -d '{ "newEmail" : "dchagastelles+new@gmail.com", "oldEmail" : "dchagastelles@gmail.com" }' http://localhost:8082/v1/update/email
+curl -XPOST -H "Content-Type: application/json" -H "Authorization: profile-api-secret-key" -d '{ "newEmail" : "dchagastelles+new@gmail.com", "did" : "did:elastos:ickRu1ujX3uGaRJi76twXZU9LivYo1ER18" }' http://localhost:8082/v1/update/email
