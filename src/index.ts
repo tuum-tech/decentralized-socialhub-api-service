@@ -89,15 +89,15 @@ app.post("/v1/update/email", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /update/email");
 
-  // 1) receive old_mail, new_mail
-  const { oldEmail, newEmail } = req.body;
+  // 1) receive did, new_mail
+  const { did, newEmail } = req.body;
 
   // 2) generate new code
   const code = crypto.randomBytes(16).toString("hex");
 
 
-  registerUpdateAttempt(oldEmail, newEmail, code);
-  
+  registerUpdateAttempt(did, newEmail, code);
+
   try {
 
     await sendCreateUserVerificationEmailUpdate(newEmail, code);
