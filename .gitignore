@@ -112,5 +112,6 @@ dist
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-# Gcloud
-app.yaml
+# AWS
+.ebextensions_prod
+
