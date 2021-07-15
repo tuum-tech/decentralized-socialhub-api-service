@@ -23,10 +23,10 @@ cp .env.example .env
 npm i
 ```
 
-- Start API server
+- Start API server in development mode
 
 ```
-npm start
+npm run dev
 ```
 
 # Verify
@@ -203,9 +203,8 @@ curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: applic
 curl -X POST -H 'Authorization: profile-api-secret-key' -H 'Content-Type: application/json' -H "Accept: application/json" -d '{"subject": "your subject", "description": "your description"}' http://localhost:8082/v1/support_router/send_email
 ```
 
-## Deploy it on Google Cloud Engine
+## Deploy it on AWS Elastic Beanstalk
 
-- Copy app.sample.yaml to app.yaml and modify the environment variables to your own setting
-- Deploy: `gcloud app deploy`
-- Check out the logs: `gcloud app logs tail -s default`
-- View your app in the web browser: `gcloud app browse`
+```
+eb deploy --timeout 240
+```
