@@ -154,6 +154,9 @@ export async function getUser(code: string): Promise<any | undefined> {
   const { items } = find_code;
 
   // tslint:disable-next-line:no-console
+  console.log(JSON.stringify(response));
+
+  // tslint:disable-next-line:no-console
   console.log(JSON.stringify(items[0]));
 
   if (items.length === 0) {
@@ -375,7 +378,7 @@ export async function registerVerifyAttempt(
   name: string,
   email: string,
   code: string
-) {
+) : Promise<boolean> {
   const hiveClient = await getNonAnonymousClient();
   const script = {
     name: "add_user",
@@ -390,6 +393,7 @@ export async function registerVerifyAttempt(
       accountType: "",
       passhash: "",
       didPublishTime: 0,
+      pageTemplate: "",
       badges: {
         account: {
           beginnerTutorial: {
@@ -465,10 +469,17 @@ export async function registerVerifyAttempt(
     script as IRunScriptData
   );
 
-  const { response } = runScriptResponse;
 
   // tslint:disable-next-line:no-console
-  console.log(JSON.stringify(response));
+  console.log(JSON.stringify(runScriptResponse));
+
+  const { response } = runScriptResponse;
+  const { add_user } = response;
+  const { inserted_id } = add_user;
+
+  // tslint:disable-next-line:no-console
+  console.log(JSON.stringify(inserted_id));
+  return (inserted_id !== undefined);
 }
 
 export async function getHiveClient(): Promise<HiveClient> {

@@ -75,11 +75,17 @@ app.post("/v1/create/user", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log(JSON.stringify(req.body));
 
-  const { email, name } = req.body;
-  registerVerifyAttempt(name, email, code);
-  // send email
-  await sendCreateUserVerificationEmail(email, code);
-  returnSuccess(res, { return_code: "WAITING_CONFIRMATION" });
+   const { email, name } = req.body;
+  const registerSuccess = await registerVerifyAttempt(name, email, code);
+
+  // send email if success
+
+  if (registerSuccess){
+    await sendCreateUserVerificationEmail(email, code);
+    returnSuccess(res, { return_code: "WAITING_CONFIRMATION" });
+  } else {
+    returnError(res, {});
+  }
 });
 
 // Todo: extract those endpoints in separate router
