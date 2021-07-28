@@ -27,7 +27,7 @@ supportRouter.post("/send_email", async (req, res) => {
 });
 
 
-supportRouter.post("/github/:owner/:repos/issues", async (req, res) => {
+supportRouter.get("/github/:owner/:repos/issues", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.info("Executing: /v1/support_router/github/issues");
 
