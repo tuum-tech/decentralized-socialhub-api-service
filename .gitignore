@@ -115,3 +115,6 @@ dist
 # AWS
 .ebextensions_prod
 
+
+# IDE
+.vscode
