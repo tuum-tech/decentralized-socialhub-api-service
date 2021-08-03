@@ -136,16 +136,17 @@ export function isTuumApi(serviceResponse: any) {
   }
 }
 
-export async function getUser(
+export async function verifyUser(
   code: string,
-  did?: string
+  did?: string,
+  phone?: string,
 ): Promise<any | undefined> {
   const hiveClient = await getNonAnonymousClient();
-  const bySMSCode = did && did !== "";
+  const bySMSCode = did && did !== "" && phone && phone !== "";
   const script = {
     name: bySMSCode ? "verify_sms_code" : "verify_email_code",
     params: bySMSCode
-      ? { code, did }
+      ? { code, did, phone }
       : {
           code,
         },
@@ -233,15 +234,13 @@ export async function sendSMSCode(to: string, code: string) {
   const body = `Welcom to Profile! Your verification code is ${code}`;
 
   let successed = false;
-
   try {
     const res = await client.messages.create({
       body,
       from: process.env.TWILIO_PHONE_NUMBER,
       to,
     });
-    // tslint:disable-next-line:no-console
-    console.log("====>", res);
+
   } catch (e) {
     successed = false;
   }
@@ -376,13 +375,12 @@ export async function registerUpdateVerifyAttempt(email: string, code: string) {
 export async function registerUpdateAttempt(
   did: string,
   email: string,
-  phone: string,
   code: string
 ) {
   const hiveClient = await getNonAnonymousClient();
   const script = {
     name: "update_verify_user",
-    params: { did, email, phone, code },
+    params: { did, email, code },
   };
 
   const runScriptResponse: IRunScriptResponse<any> =

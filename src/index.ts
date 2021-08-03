@@ -10,7 +10,7 @@ import cors from "cors";
 import didcredsRouter from "./v1/didcreds_router";
 import {
   getHiveClient,
-  getUser,
+  verifyUser,
   registerUpdateAttempt,
   registerVerifyAttempt,
   returnError,
@@ -96,8 +96,6 @@ app.post("/v1/credential/create", async (req, res) => {
   }
 });
 
-// Todo: extract those endpoints in separate router
-
 app.post("/v1/credential/update", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /credential/update");
@@ -108,7 +106,7 @@ app.post("/v1/credential/update", async (req, res) => {
     code = crypto.randomBytes(2).toString("hex");
   }
 
-  registerUpdateAttempt(did, email, phone, code);
+  registerUpdateAttempt(did, email, code);
 
   try {
     await sendCreateUserVerificationUpdate(email, phone, code, smsCode);
@@ -126,8 +124,8 @@ app.post("/v1/credential/verify", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /v1/credential/verify");
 
-  const { code, did } = req.body;
-  const result: any = await getUser(code, did);
+  const { code, did, phone } = req.body;
+  const result: any = await verifyUser(code, did || '', phone || '');
 
   if (result === undefined) {
     returnSuccess(res, { return_code: "CODE_INVALID" });
