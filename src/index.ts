@@ -71,9 +71,9 @@ app.use("/v1/support_router", supportRouter);
 
 app.post("/v1/credential/create", async (req, res) => {
   // tslint:disable-next-line:no-console
-  console.log(JSON.stringify(req.body));
+  console.log("/v1/credential/create", JSON.stringify(req.body));
 
-  const { name, email, phone, smsCode } = req.body;
+  const { name, email, phone, smsCode, did } = req.body;
   let code = crypto.randomBytes(16).toString("hex");
   if (smsCode) {
     code = crypto.randomBytes(2).toString("hex");
@@ -84,6 +84,7 @@ app.post("/v1/credential/create", async (req, res) => {
     email,
     phone,
     code,
+    did,
     smsCode
   );
 
@@ -130,11 +131,13 @@ app.post("/v1/credential/verify", async (req, res) => {
   if (result === undefined) {
     returnSuccess(res, { return_code: "CODE_INVALID" });
   } else {
+
     returnSuccess(res, {
       return_code: "CODE_CONFIRMED",
       email: result.email,
       phone: result.phone,
       name: result.name,
+      did: result.did
     });
   }
 });

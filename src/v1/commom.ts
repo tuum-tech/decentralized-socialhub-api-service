@@ -138,15 +138,15 @@ export function isTuumApi(serviceResponse: any) {
 
 export async function verifyUser(
   code: string,
-  did?: string,
+  didV?: string,
   phone?: string,
 ): Promise<any | undefined> {
   const hiveClient = await getNonAnonymousClient();
-  const bySMSCode = did && did !== "" && phone && phone !== "";
+  const bySMSCode = didV && didV !== "" && phone && phone !== "";
   const script = {
     name: bySMSCode ? "verify_sms_code" : "verify_email_code",
     params: bySMSCode
-      ? { code, did, phone }
+      ? { code, didV, phone }
       : {
           code,
         },
@@ -162,9 +162,8 @@ export async function verifyUser(
   if (items.length === 0) {
     return undefined;
   }
-
-  const { loginCred, name } = items[0];
-  return { name, loginCred };
+  const { loginCred, name, did } = items[0];
+  return { name, loginCred, did };
 }
 
 export async function isRegisteredInVault(email: string): Promise<boolean> {
@@ -397,15 +396,17 @@ export async function registerVerifyAttempt(
   email: string,
   phone: string,
   code: string,
+  did: string,
   smsCode: boolean
 ): Promise<boolean> {
+
   const hiveClient = await getNonAnonymousClient();
   const loginCred = smsCode ? { phone } : { email };
   const script = {
     name: "add_user",
     params: {
       name,
-      did: "",
+      did,
       loginCred,
       status: "WAITING_CONFIRMATION",
       code,
