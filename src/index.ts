@@ -20,6 +20,7 @@ import {
 } from "./v1/commom";
 import crypto from "crypto";
 import { scheduleUsersCleanUp } from "./scheduler/user-cleanup";
+import { DefaultDIDAdapter, DIDBackend } from "@elastosfoundation/did-js-sdk/";
 
 dotenv.config();
 
@@ -68,7 +69,6 @@ app.use("/v1/assist_router", assistRouter);
 app.use("/v1/didcreds_router", didcredsRouter);
 app.use("/v1/auth", auth);
 app.use("/v1/support_router", supportRouter);
-
 app.post("/v1/credential/create", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log(JSON.stringify(req.body));
@@ -148,4 +148,8 @@ app.listen(port, () => {
   console.log(`Profile Api Service listening on port ${port}!`);
 
   scheduleUsersCleanUp();
+
+  // initialize DIDBackend
+  DIDBackend.initialize(new DefaultDIDAdapter("mainnet"));
+
 });
