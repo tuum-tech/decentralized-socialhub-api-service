@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import { ElastosClient } from '@elastosfoundation/elastos-js-sdk';
 import jwt_decode from 'jwt-decode';
 import { handleRoute, returnSuccess } from './commom';
-import { DIDBackend, DefaultDIDAdapter, DID, DIDStore, DIDURL, Issuer, RootIdentity, HDKey, VerifiableCredential } from '@elastosfoundation/did-js-sdk/';
+import { DIDBackend, DefaultDIDAdapter, DID, DIDStore, DIDURL, Issuer, RootIdentity, HDKey, VerifiableCredential, DIDDocument, DIDDocumentBuilder } from '@elastosfoundation/did-js-sdk/';
 
 
 const didcredsRouter = express.Router();
@@ -30,48 +30,31 @@ didcredsRouter.post('/validation/email_callback_elastos', async (req, res) => {
     returnSuccess(res, ret);
 });
 
+
+const getExpirationDate =  () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const day = d.getDate();
+  return new Date(year + 5, month, day);
+}
+
+
 didcredsRouter.post('/validation/internet_account', async (req, res) => {
-
-    // tslint:disable-next-line:no-console
-    console.info("Executing: /v1/didcreds_router/validation/internet_account");
-
-    const url = `${process.env.DIDCREDS_API_URL}/v1/validation/internet_account`;
-
-    // tslint:disable-next-line:no-console
-    console.info("url: " + url);
-
-   // tslint:disable-next-line:no-console
-   console.info("body: " + JSON.stringify(req.body));
-    // tslint:disable-next-line:no-console
-   console.info("header: " + JSON.stringify(getDidcredsHeader()));
-
-    const retOld: any = await handleRoute(url, req.body, getDidcredsHeader(), true);
-
-    // tslint:disable-next-line:no-console
-    console.log(`Return: ${JSON.stringify(retOld)}`);
-
-
 
     const userDid = req.body.did;
     const credentialType = req.body.credential_type;
     const credentialValue = req.body.credential_value;
     const appDid = process.env.TUUMVAULT_APP_DID;
     const appMnemonics = process.env.TUUMVAULT_MNEMONIC;
-    // appMnemonics = 'deliver crane orphan dismiss proud circle lawn cabbage fancy color clever tree';
-    // appDid = "did:elastos:ijoT8sAbrY8TMKs3edyNUXMcuj1BcYVPqr";
+    const DID_STORE_PWD = process.env.DID_STORE_PASSWORD as string;
 
-    DIDBackend.initialize(new DefaultDIDAdapter("mainnet"));
-
-    const didStore = await DIDStore.open("/tmp/store");
-    const rootIdentity = RootIdentity.createFromMnemonic(appMnemonics, "", didStore, "passw", true);
-    const did = rootIdentity.getDid(0);
-
-
+    const didStore = await DIDStore.open(process.env.DID_STORE_PATH as string);
+    const did = DID.from(appDid);
     didStore.storeDid(await did.resolve());
-
     const appDocument = await didStore.loadDid(appDid);
 
-    const key = HDKey.newWithMnemonic(appMnemonics, "");
+    const key = HDKey.newWithMnemonic(appMnemonics, "").deriveWithPath(HDKey.DERIVE_PATH_PREFIX+0);
     const id: DIDURL = DIDURL.from(
       '#primary',
       DID.from(appDid as string) as DID
@@ -79,45 +62,28 @@ didcredsRouter.post('/validation/internet_account', async (req, res) => {
     didStore.storePrivateKey(
       id as DIDURL,
       key.serialize(),
-      "passw" as string
+      DID_STORE_PWD
     );
-
 
     const issuer = new Issuer(appDocument, id);
     const vcBuilder = issuer.issueFor(DID.from(userDid) as DID);
 
     const vc = await vcBuilder
-      .expirationDate(new Date())
+      .expirationDate(getExpirationDate())
       .type("BasicProfileCredential","InternetAccountCredential","TwitterCredential","VerifiableCredential")
       .property(credentialType, credentialValue)
       .id(
-        DIDURL.from(`#${credentialType}`, DID.from(userDid) as DID) as DIDURL
+        DIDURL.from(`#${credentialType}`, DID.from(userDid)) as DIDURL
       )
-      .seal("passw" as string);
-
-
-    // tslint:disable-next-line:no-console
-    console.log("new VC :" + vc.toString(true));
-    // tslint:disable-next-line:no-console
-    console.log("new VC valid :" + await vc.isValid());
-
-    const stringCredential = JSON.stringify(retOld.verifiable_credential);
-    // tslint:disable-next-line:no-console
-    console.log("old VC :" + stringCredential);
+      .seal(DID_STORE_PWD);
 
     // tslint:disable-next-line:no-console
-    console.log("old VC valid :" + await (await VerifiableCredential.parseContent(stringCredential)).isValid());
+    console.log("is VC valid :" + await vc.isValid());
 
+    const ret = { verifiable_credential: vc.toString(true) }
 
-    // const ret = {
-    //     verifiable_credential: {
-    //         old: retOld,
-    //     }
-    // }
-    returnSuccess(res, retOld);
+    returnSuccess(res, ret);
 });
-
-
 
 
 export default didcredsRouter;
