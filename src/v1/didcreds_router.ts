@@ -68,9 +68,15 @@ didcredsRouter.post('/validation/internet_account', async (req, res) => {
     const issuer = new Issuer(appDocument, id);
     const vcBuilder = issuer.issueFor(DID.from(userDid) as DID);
 
+    const credentialName = `${credentialType.charAt(0).toUpperCase() + credentialType.slice(1)}Credential`;
+
+    // tslint:disable-next-line:no-console
+    console.log("credentialName :" + credentialName);
+
+
     const vc = await vcBuilder
       .expirationDate(getExpirationDate())
-      .type("BasicProfileCredential","InternetAccountCredential","TwitterCredential","VerifiableCredential")
+      .type("BasicProfileCredential","InternetAccountCredential", credentialName, "VerifiableCredential")
       .property(credentialType, credentialValue)
       .id(
         DIDURL.from(`#${credentialType}`, DID.from(userDid)) as DIDURL
