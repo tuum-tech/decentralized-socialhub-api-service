@@ -13,11 +13,10 @@ tuumvaultRouter.post('/scripting/set_script', async (req, res) => {
 
 tuumvaultRouter.post('/scripting/run_script', async (req, res) => {
     // tslint:disable-next-line:no-console
-    console.info("Executing: /v1//scripting/run_script");
+    console.info("Executing: /v1/scripting/run_script");
 
     const hiveClient = await getHiveClient();
     const response : IRunScriptResponse<any> =  await hiveClient.Scripting.RunScript<any>(req.body as IRunScriptData);
-
 
     returnSuccess(res, response.response);
 });
