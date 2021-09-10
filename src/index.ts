@@ -5,6 +5,7 @@ import tuumvaultRouter from "./v1/tuumvault_router";
 import supportRouter from "./v1/support_router";
 import vouchRouter from "./v1/vouch_router";
 import assistRouter from "./v1/assist_router";
+import testRouter from "./v1/test";
 import auth from "./v1/auth";
 import cors from "cors";
 import didcredsRouter from "./v1/didcreds_router";
@@ -69,6 +70,8 @@ app.use("/v1/assist_router", assistRouter);
 app.use("/v1/didcreds_router", didcredsRouter);
 app.use("/v1/auth", auth);
 app.use("/v1/support_router", supportRouter);
+app.use("/v1/test", testRouter);
+
 app.post("/v1/credential/create", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("/v1/credential/create", JSON.stringify(req.body));
@@ -134,7 +137,7 @@ app.post("/v1/credential/verify", async (req, res) => {
 
     returnSuccess(res, {
       return_code: "CODE_CONFIRMED",
-      email: result.email,
+      email: result.loginCred.email,
       phone: result.phone,
       name: result.name,
       did: result.did

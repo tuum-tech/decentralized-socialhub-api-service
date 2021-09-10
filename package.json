@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/tuum-tech/profile-api-service#readme",
   "dependencies": {
+    "@dchagastelles/elastos-hive-js-sdk": "^2.4.0",
     "@elastos/elastos-hive-js-sdk": "github:elastos/Elastos.NET.Hive.JS.SDK",
     "@elastosfoundation/did-js-sdk": "^2.0.10",
     "@elastosfoundation/elastos-js-sdk": "^1.2.9",
