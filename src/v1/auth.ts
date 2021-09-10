@@ -134,6 +134,9 @@ auth.get('/twitter_request', async (req, res) => {
             tokenSecret: string,
             parsedQueryString: any) => {
 
+            // tslint:disable-next-line:no-console
+            console.info("parsed query string:" + JSON.stringify(parsedQueryString));
+
             const { user_id } = parsedQueryString;
                consumer.get(`https://api.twitter.com/1.1/users/show.json?user_id=${user_id}`, accessToken, tokenSecret, (errorUser: {statusCode: number, data?: any},
                result?: string | Buffer,

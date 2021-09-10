@@ -162,6 +162,8 @@ export async function verifyUser(
   if (items.length === 0) {
     return undefined;
   }
+  // tslint:disable-next-line:no-console
+  console.log("item " + JSON.stringify(items[0]));
   const { loginCred, name, did } = items[0];
   return { name, loginCred, did };
 }
