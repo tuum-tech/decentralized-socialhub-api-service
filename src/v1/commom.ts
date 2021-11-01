@@ -479,6 +479,7 @@ export async function registerVerifyAttempt(
       },
       userToken: "",
       isDIDPublished: "",
+      isEssentialUser: false,
       onBoardingCompleted: "",
       tutorialStep: "",
       hiveHost: "",
