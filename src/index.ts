@@ -16,12 +16,12 @@ import {
   registerVerifyAttempt,
   returnError,
   returnSuccess,
-  sendCreateUserVerificationUpdate,
   sendCreateUserVerification,
 } from "./v1/commom";
 import crypto from "crypto";
 import { scheduleUsersCleanUp } from "./scheduler/user-cleanup";
 import { DefaultDIDAdapter, DIDBackend } from "@elastosfoundation/did-js-sdk/";
+// import path from 'path';
 
 dotenv.config();
 
@@ -72,28 +72,27 @@ app.use("/v1/auth", auth);
 app.use("/v1/support_router", supportRouter);
 app.use("/v1/test", testRouter);
 
+
+// app.use(express.static(path.join(__dirname, '..', 'public', 'templates')));
+
 app.post("/v1/credential/create", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("/v1/credential/create", JSON.stringify(req.body));
 
-  const { name, email, phone, smsCode, did } = req.body;
-  let code = crypto.randomBytes(16).toString("hex");
-  if (smsCode) {
-    code = crypto.randomBytes(2).toString("hex");
-  }
+  const { name, email, phone, did } = req.body;
+  const code = crypto.randomBytes(3).toString("hex").toUpperCase();
 
   const registerSuccess = await registerVerifyAttempt(
     name,
     email,
     phone,
     code,
-    did,
-    smsCode
+    did
   );
 
   // send email if success
   if (registerSuccess) {
-    await sendCreateUserVerification(email, phone, code, smsCode);
+    await sendCreateUserVerification(email, phone, code);
     returnSuccess(res, { return_code: "WAITING_CONFIRMATION" });
   } else {
     returnError(res, {});
@@ -104,16 +103,13 @@ app.post("/v1/credential/update", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /credential/update");
 
-  const { did, email, phone, smsCode } = req.body;
-  let code = crypto.randomBytes(16).toString("hex");
-  if (smsCode) {
-    code = crypto.randomBytes(2).toString("hex");
-  }
+  const { did, email, phone } = req.body;
+  const code = crypto.randomBytes(3).toString("hex").toUpperCase();
 
-  registerUpdateAttempt(did, email, code);
+  await registerUpdateAttempt(did, email, code);
 
   try {
-    await sendCreateUserVerificationUpdate(email, phone, code, smsCode);
+    await sendCreateUserVerification(email, phone, code);
     returnSuccess(res, {
       status: "success",
     });

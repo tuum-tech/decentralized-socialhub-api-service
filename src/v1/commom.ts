@@ -6,11 +6,17 @@ import {
   IRunScriptData,
   IRunScriptResponse,
 } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
-import { config } from "dotenv/types";
-import tuumvaultRouter from "./tuumvault_router";
+
 import { ElastosClient } from "@elastosfoundation/elastos-js-sdk";
 import jwt_decode from "jwt-decode";
 import nodemailer from "nodemailer";
+import EmailTemplates from 'swig-email-templates';
+import path from 'path';
+
+const templateDir = path.join(__dirname, '..', '..', 'public', 'templates')
+const templates = new EmailTemplates({
+  root: templateDir,
+});
 
 export interface TuumTechResponse {
   meta: {
@@ -244,7 +250,12 @@ export async function sendSMSCode(to: string, code: string) {
       from: process.env.TWILIO_PHONE_NUMBER,
       to,
     });
+
+    // tslint:disable-next-line:no-console
+    console.log("res", res);
   } catch (e) {
+    // tslint:disable-next-line:no-console
+    console.log("e", e);
     successed = false;
   }
 }
@@ -253,31 +264,23 @@ export async function sendCreateUserVerification(
   email: string,
   phone: string,
   code: string,
-  smsCode: boolean
 ) {
-  if (smsCode) {
-    await sendSMSCode(phone, code);
-  } else {
-    const subject = "Profile Email verification";
-    const text = `Please click on the following link ${process.env.EMAIL_VERIFICATION_CALLBACK}/${code} to proceed with Profile Onboarding process`;
-    const html = `Please click on the following link <a href=${process.env.EMAIL_VERIFICATION_CALLBACK}/${code}>Validate</a> to proceed with Profile Onboarding process`;
-    await sendMail(process.env.EMAIL_SENDER, subject, email, text, html);
-  }
-}
+  // tslint:disable-next-line:no-console
+  console.log('====>phone', phone, code)
+  if (phone && phone !== '') {
+    // tslint:disable-next-line:no-console
+    console.log('====>1');
 
-export async function sendCreateUserVerificationUpdate(
-  email: string,
-  phone: string,
-  code: string,
-  smsCode: boolean
-) {
-  if (smsCode) {
     await sendSMSCode(phone, code);
+
+    // tslint:disable-next-line:no-console
+    console.log('====>2');
   } else {
-    const subject = "Profile Email Update verification";
-    const text = `Please click on the following link ${process.env.EMAIL_UPDATE_CALLBACK}/${code} to confirm email update`;
-    const html = `Please click on the following link <a href=${process.env.EMAIL_UPDATE_CALLBACK}/${code}>Validate</a> to confirm email update`;
-    sendMail(process.env.EMAIL_SENDER, subject, email, text, html);
+    await templates.render('verify.html', { code }, async (err, html, text, subject) => {
+      if (!err) {
+        await sendMail(process.env.EMAIL_SENDER, "Profile Email verification", email, text, html);
+      }
+    })
   }
 }
 
@@ -400,11 +403,16 @@ export async function registerVerifyAttempt(
   email: string,
   phone: string,
   code: string,
-  did: string,
-  smsCode: boolean
+  did: string
 ): Promise<boolean> {
   const hiveClient = await getNonAnonymousClient();
-  const loginCred = smsCode ? { phone } : { email };
+  const loginCred = {};
+  if (phone && phone !== '') {
+    (loginCred as any).phone = phone
+  }
+  if (email && email !== '') {
+    (loginCred as any).email = email
+  }
   const script = {
     name: "add_user",
     params: {

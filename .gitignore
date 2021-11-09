@@ -114,6 +114,7 @@ dist
 
 # AWS
 .ebextensions_prod
+didstore
 
 
 # IDE
