@@ -106,7 +106,7 @@ app.post("/v1/credential/update", async (req, res) => {
   const { did, email, phone } = req.body;
   const code = crypto.randomBytes(3).toString("hex").toUpperCase();
 
-  await registerUpdateAttempt(did, email, code);
+  await registerUpdateAttempt(did, code);
 
   try {
     await sendCreateUserVerification(email, phone, code);
@@ -125,19 +125,24 @@ app.post("/v1/credential/verify", async (req, res) => {
   console.log("Executing: /v1/credential/verify");
 
   const { code, did, phone } = req.body;
-  const result: any = await verifyUser(code, did || '', phone || '');
 
-  if (result === undefined) {
-    returnSuccess(res, { return_code: "CODE_INVALID" });
-  } else {
+  let result;
+  try {
+    result = await verifyUser(code, did || '', phone || '');
+  } catch (e) {
+    result = undefined;
+  }
 
+  if (result && result.did) {
     returnSuccess(res, {
       return_code: "CODE_CONFIRMED",
-      email: result.loginCred.email,
-      phone: result.phone,
+      email: result.loginCred.email || '',
+      phone: result.phone || '',
       name: result.name,
       did: result.did
     });
+  } else {
+    returnSuccess(res, { return_code: "CODE_INVALID" });
   }
 });
 

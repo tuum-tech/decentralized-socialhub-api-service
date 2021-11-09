@@ -155,7 +155,7 @@ export async function verifyUser(
   const script = {
     name: bySMSCode ? "verify_sms_code" : "verify_email_code",
     params: bySMSCode
-      ? { code, didV, phone }
+      ? { code, did: didV, phone }
       : {
           code,
         },
@@ -168,7 +168,7 @@ export async function verifyUser(
   const { find_code } = response;
   const { items } = find_code;
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return undefined;
   }
   // tslint:disable-next-line:no-console
@@ -251,8 +251,6 @@ export async function sendSMSCode(to: string, code: string) {
       to,
     });
 
-    // tslint:disable-next-line:no-console
-    console.log("res", res);
   } catch (e) {
     // tslint:disable-next-line:no-console
     console.log("e", e);
@@ -265,16 +263,8 @@ export async function sendCreateUserVerification(
   phone: string,
   code: string,
 ) {
-  // tslint:disable-next-line:no-console
-  console.log('====>phone', phone, code)
   if (phone && phone !== '') {
-    // tslint:disable-next-line:no-console
-    console.log('====>1');
-
     await sendSMSCode(phone, code);
-
-    // tslint:disable-next-line:no-console
-    console.log('====>2');
   } else {
     await templates.render('verify.html', { code }, async (err, html, text, subject) => {
       if (!err) {
@@ -380,13 +370,12 @@ export async function registerUpdateVerifyAttempt(email: string, code: string) {
 
 export async function registerUpdateAttempt(
   did: string,
-  email: string,
   code: string
 ) {
   const hiveClient = await getNonAnonymousClient();
   const script = {
     name: "update_verify_user",
-    params: { did, email, code },
+    params: { did, code },
   };
 
   const runScriptResponse: IRunScriptResponse<any> =
