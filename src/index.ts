@@ -110,7 +110,7 @@ app.post("/v1/credential/update", async (req, res) => {
   await registerUpdateAttempt(did, code);
 
   try {
-    // await sendCreateUserVerification(email, phone, code);
+    await sendCreateUserVerification(email, phone, code);
     returnSuccess(res, {
       status: "success",
     });
