@@ -145,20 +145,15 @@ export function isTuumApi(serviceResponse: any) {
   }
 }
 
-export async function verifyUser(
+export async function verifyCode(
   code: string,
-  didV?: string,
-  phone?: string
+  email: string,
+  phone: string,
 ): Promise<any | undefined> {
   const hiveClient = await getNonAnonymousClient();
-  const bySMSCode = didV && didV !== "" && phone && phone !== "";
   const script = {
-    name: bySMSCode ? "verify_sms_code" : "verify_email_code",
-    params: bySMSCode
-      ? { code, did: didV, phone }
-      : {
-          code,
-        },
+    name: email !== '' ? 'verify_email_code' : 'verify_phone_code',
+    params: { code, email, phone }
   };
 
   const runScriptResponse: IRunScriptResponse<any> =
@@ -171,8 +166,7 @@ export async function verifyUser(
   if (!items || items.length === 0) {
     return undefined;
   }
-  // tslint:disable-next-line:no-console
-  console.log("item " + JSON.stringify(items[0]));
+
   const { loginCred, name, did } = items[0];
   return { name, loginCred, did };
 }
@@ -272,100 +266,6 @@ export async function sendCreateUserVerification(
       }
     })
   }
-}
-
-export async function registerUpdateVerifyAttempt(email: string, code: string) {
-  const hiveClient = await getNonAnonymousClient();
-  const script = {
-    name: "update_user",
-    params: {
-      name,
-      did: "",
-      loginCred: {
-        email,
-      },
-      status: "WAITING_CONFIRMATION",
-      code,
-      accountType: "",
-      passhash: "",
-      badges: {
-        account: {
-          beginnerTutorial: {
-            archived: false,
-          },
-          basicProfile: {
-            archived: false,
-          },
-          educationProfile: {
-            archived: false,
-          },
-          experienceProfile: {
-            archived: false,
-          },
-        },
-        socialVerify: {
-          linkedin: {
-            archived: false,
-          },
-          facebook: {
-            archived: false,
-          },
-          twitter: {
-            archived: false,
-          },
-          google: {
-            archived: false,
-          },
-          email: {
-            archived: false,
-          },
-          phone: {
-            archived: false,
-          },
-        },
-        didPublishTimes: {
-          _1times: {
-            archived: false,
-          },
-          _5times: {
-            archived: false,
-          },
-          _10times: {
-            archived: false,
-          },
-          _25times: {
-            archived: false,
-          },
-          _50times: {
-            archived: false,
-          },
-          _100times: {
-            archived: false,
-          },
-        },
-        dStorage: {
-          ownVault: {
-            archived: false,
-          },
-        },
-      },
-      userToken: "",
-      isDIDPublished: "",
-      onBoardingCompleted: "",
-      tutorialStep: "",
-      hiveHost: "",
-      avatar: "",
-      timestamp: Date.now(),
-    },
-  };
-
-  const runScriptResponse: IRunScriptResponse<any> =
-    await hiveClient.Scripting.RunScript<any>(script as IRunScriptData);
-
-  const { response } = runScriptResponse;
-
-  // tslint:disable-next-line:no-console
-  console.log(JSON.stringify(response));
 }
 
 export async function registerUpdateAttempt(

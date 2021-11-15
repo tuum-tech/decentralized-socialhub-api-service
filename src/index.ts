@@ -11,7 +11,7 @@ import cors from "cors";
 import didcredsRouter from "./v1/didcreds_router";
 import {
   getHiveClient,
-  verifyUser,
+  verifyCode,
   registerUpdateAttempt,
   registerVerifyAttempt,
   returnError,
@@ -79,20 +79,20 @@ app.post("/v1/credential/create", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("/v1/credential/create", JSON.stringify(req.body));
 
-  const { name, email, phone, did } = req.body;
+  const { name, email, did } = req.body;
   const code = crypto.randomBytes(3).toString("hex").toUpperCase();
 
   const registerSuccess = await registerVerifyAttempt(
     name,
     email,
-    phone,
+    '',
     code,
     did
   );
 
   // send email if success
   if (registerSuccess) {
-    await sendCreateUserVerification(email, phone, code);
+    await sendCreateUserVerification(email, '', code);
     returnSuccess(res, { return_code: "WAITING_CONFIRMATION" });
   } else {
     returnError(res, {});
@@ -103,13 +103,14 @@ app.post("/v1/credential/update", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /credential/update");
 
+
   const { did, email, phone } = req.body;
   const code = crypto.randomBytes(3).toString("hex").toUpperCase();
 
   await registerUpdateAttempt(did, code);
 
   try {
-    await sendCreateUserVerification(email, phone, code);
+    // await sendCreateUserVerification(email, phone, code);
     returnSuccess(res, {
       status: "success",
     });
@@ -124,18 +125,18 @@ app.post("/v1/credential/verify", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /v1/credential/verify");
 
-  const { code, did, phone } = req.body;
+  const { code, phone, email } = req.body;
 
   let result;
   try {
-    result = await verifyUser(code, did || '', phone || '');
+    result = await verifyCode(code, email, phone);
   } catch (e) {
     result = undefined;
   }
 
-  if (result && result.did) {
+  if (result && result.name) {
     returnSuccess(res, {
-      return_code: "CODE_CONFIRMED",
+      return_code: "CONFIRMED",
       email: result.loginCred.email || '',
       phone: result.phone || '',
       name: result.name,
