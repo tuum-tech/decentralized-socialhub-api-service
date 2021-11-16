@@ -11,17 +11,17 @@ import cors from "cors";
 import didcredsRouter from "./v1/didcreds_router";
 import {
   getHiveClient,
-  verifyUser,
+  verifyCode,
   registerUpdateAttempt,
   registerVerifyAttempt,
   returnError,
   returnSuccess,
-  sendCreateUserVerificationUpdate,
   sendCreateUserVerification,
 } from "./v1/commom";
 import crypto from "crypto";
 import { scheduleUsersCleanUp } from "./scheduler/user-cleanup";
 import { DefaultDIDAdapter, DIDBackend } from "@elastosfoundation/did-js-sdk/";
+// import path from 'path';
 
 dotenv.config();
 
@@ -72,28 +72,27 @@ app.use("/v1/auth", auth);
 app.use("/v1/support_router", supportRouter);
 app.use("/v1/test", testRouter);
 
+
+// app.use(express.static(path.join(__dirname, '..', 'public', 'templates')));
+
 app.post("/v1/credential/create", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("/v1/credential/create", JSON.stringify(req.body));
 
-  const { name, email, phone, smsCode, did } = req.body;
-  let code = crypto.randomBytes(16).toString("hex");
-  if (smsCode) {
-    code = crypto.randomBytes(2).toString("hex");
-  }
+  const { name, email, did } = req.body;
+  const code = crypto.randomBytes(3).toString("hex").toUpperCase();
 
   const registerSuccess = await registerVerifyAttempt(
     name,
     email,
-    phone,
+    '',
     code,
-    did,
-    smsCode
+    did
   );
 
   // send email if success
   if (registerSuccess) {
-    await sendCreateUserVerification(email, phone, code, smsCode);
+    await sendCreateUserVerification(email, '', code);
     returnSuccess(res, { return_code: "WAITING_CONFIRMATION" });
   } else {
     returnError(res, {});
@@ -104,16 +103,14 @@ app.post("/v1/credential/update", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /credential/update");
 
-  const { did, email, phone, smsCode } = req.body;
-  let code = crypto.randomBytes(16).toString("hex");
-  if (smsCode) {
-    code = crypto.randomBytes(2).toString("hex");
-  }
 
-  registerUpdateAttempt(did, email, code);
+  const { did, email, phone } = req.body;
+  const code = crypto.randomBytes(3).toString("hex").toUpperCase();
+
+  await registerUpdateAttempt(did, code);
 
   try {
-    await sendCreateUserVerificationUpdate(email, phone, code, smsCode);
+    await sendCreateUserVerification(email, phone, code);
     returnSuccess(res, {
       status: "success",
     });
@@ -128,20 +125,25 @@ app.post("/v1/credential/verify", async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log("Executing: /v1/credential/verify");
 
-  const { code, did, phone } = req.body;
-  const result: any = await verifyUser(code, did || '', phone || '');
+  const { code, phone, email } = req.body;
 
-  if (result === undefined) {
-    returnSuccess(res, { return_code: "CODE_INVALID" });
-  } else {
+  let result;
+  try {
+    result = await verifyCode(code, email, phone);
+  } catch (e) {
+    result = undefined;
+  }
 
+  if (result && result.name) {
     returnSuccess(res, {
-      return_code: "CODE_CONFIRMED",
-      email: result.loginCred.email,
-      phone: result.phone,
+      return_code: "CONFIRMED",
+      email: result.loginCred.email || '',
+      phone: result.phone || '',
       name: result.name,
       did: result.did
     });
+  } else {
+    returnSuccess(res, { return_code: "CODE_INVALID" });
   }
 });
 
