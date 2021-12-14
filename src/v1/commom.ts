@@ -6,12 +6,6 @@ import {
   IRunScriptData,
   IRunScriptResponse,
 } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
-<<<<<<< HEAD
-import { config } from "dotenv/types";
-import tuumvaultRouter from "./tuumvault_router";
-=======
-
->>>>>>> ee4b8460ce1fb3b76282cca359e0596025c7f9ba
 import { ElastosClient } from "@elastosfoundation/elastos-js-sdk";
 import jwt_decode from "jwt-decode";
 import nodemailer from "nodemailer";
@@ -152,13 +146,8 @@ export function isTuumApi(serviceResponse: any) {
 
 export async function verifyCode(
   code: string,
-<<<<<<< HEAD
-  didV?: string,
-  phone?: string
-=======
   email: string,
   phone: string,
->>>>>>> ee4b8460ce1fb3b76282cca359e0596025c7f9ba
 ): Promise<any | undefined> {
   const hiveClient = await getNonAnonymousClient();
   const script = {
