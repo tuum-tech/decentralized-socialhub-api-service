@@ -6,11 +6,22 @@ import {
   IRunScriptData,
   IRunScriptResponse,
 } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
+<<<<<<< HEAD
 import { config } from "dotenv/types";
 import tuumvaultRouter from "./tuumvault_router";
+=======
+
+>>>>>>> ee4b8460ce1fb3b76282cca359e0596025c7f9ba
 import { ElastosClient } from "@elastosfoundation/elastos-js-sdk";
 import jwt_decode from "jwt-decode";
 import nodemailer from "nodemailer";
+import EmailTemplates from 'swig-email-templates';
+import path from 'path';
+
+const templateDir = path.join(__dirname, '..', '..', 'public', 'templates')
+const templates = new EmailTemplates({
+  root: templateDir,
+});
 
 export interface TuumTechResponse {
   meta: {
@@ -139,20 +150,20 @@ export function isTuumApi(serviceResponse: any) {
   }
 }
 
-export async function verifyUser(
+export async function verifyCode(
   code: string,
+<<<<<<< HEAD
   didV?: string,
   phone?: string
+=======
+  email: string,
+  phone: string,
+>>>>>>> ee4b8460ce1fb3b76282cca359e0596025c7f9ba
 ): Promise<any | undefined> {
   const hiveClient = await getNonAnonymousClient();
-  const bySMSCode = didV && didV !== "" && phone && phone !== "";
   const script = {
-    name: bySMSCode ? "verify_sms_code" : "verify_email_code",
-    params: bySMSCode
-      ? { code, didV, phone }
-      : {
-          code,
-        },
+    name: email !== '' ? 'verify_email_code' : 'verify_phone_code',
+    params: { code, email, phone }
   };
 
   const runScriptResponse: IRunScriptResponse<any> =
@@ -162,11 +173,10 @@ export async function verifyUser(
   const { find_code } = response;
   const { items } = find_code;
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return undefined;
   }
-  // tslint:disable-next-line:no-console
-  console.log("item " + JSON.stringify(items[0]));
+
   const { loginCred, name, did } = items[0];
   return { name, loginCred, did };
 }
@@ -245,6 +255,8 @@ export async function sendSMSCode(to: string, code: string) {
       to,
     });
   } catch (e) {
+    // tslint:disable-next-line:no-console
+    console.log("e", e);
     successed = false;
   }
 }
@@ -253,137 +265,26 @@ export async function sendCreateUserVerification(
   email: string,
   phone: string,
   code: string,
-  smsCode: boolean
 ) {
-  if (smsCode) {
+  if (phone && phone !== '') {
     await sendSMSCode(phone, code);
   } else {
-    const subject = "Profile Email verification";
-    const text = `Please click on the following link ${process.env.EMAIL_VERIFICATION_CALLBACK}/${code} to proceed with Profile Onboarding process`;
-    const html = `Please click on the following link <a href=${process.env.EMAIL_VERIFICATION_CALLBACK}/${code}>Validate</a> to proceed with Profile Onboarding process`;
-    await sendMail(process.env.EMAIL_SENDER, subject, email, text, html);
+    await templates.render('verify.html', { code }, async (err, html, text, subject) => {
+      if (!err) {
+        await sendMail(process.env.EMAIL_SENDER, "Profile Email verification", email, text, html);
+      }
+    })
   }
-}
-
-export async function sendCreateUserVerificationUpdate(
-  email: string,
-  phone: string,
-  code: string,
-  smsCode: boolean
-) {
-  if (smsCode) {
-    await sendSMSCode(phone, code);
-  } else {
-    const subject = "Profile Email Update verification";
-    const text = `Please click on the following link ${process.env.EMAIL_UPDATE_CALLBACK}/${code} to confirm email update`;
-    const html = `Please click on the following link <a href=${process.env.EMAIL_UPDATE_CALLBACK}/${code}>Validate</a> to confirm email update`;
-    sendMail(process.env.EMAIL_SENDER, subject, email, text, html);
-  }
-}
-
-export async function registerUpdateVerifyAttempt(email: string, code: string) {
-  const hiveClient = await getNonAnonymousClient();
-  const script = {
-    name: "update_user",
-    params: {
-      name,
-      did: "",
-      loginCred: {
-        email,
-      },
-      status: "WAITING_CONFIRMATION",
-      code,
-      accountType: "",
-      passhash: "",
-      badges: {
-        account: {
-          beginnerTutorial: {
-            archived: false,
-          },
-          basicProfile: {
-            archived: false,
-          },
-          educationProfile: {
-            archived: false,
-          },
-          experienceProfile: {
-            archived: false,
-          },
-        },
-        socialVerify: {
-          linkedin: {
-            archived: false,
-          },
-          facebook: {
-            archived: false,
-          },
-          twitter: {
-            archived: false,
-          },
-          google: {
-            archived: false,
-          },
-          email: {
-            archived: false,
-          },
-          phone: {
-            archived: false,
-          },
-        },
-        didPublishTimes: {
-          _1times: {
-            archived: false,
-          },
-          _5times: {
-            archived: false,
-          },
-          _10times: {
-            archived: false,
-          },
-          _25times: {
-            archived: false,
-          },
-          _50times: {
-            archived: false,
-          },
-          _100times: {
-            archived: false,
-          },
-        },
-        dStorage: {
-          ownVault: {
-            archived: false,
-          },
-        },
-      },
-      userToken: "",
-      isDIDPublished: "",
-      onBoardingCompleted: "",
-      tutorialStep: "",
-      hiveHost: "",
-      avatar: "",
-      timestamp: Date.now(),
-    },
-  };
-
-  const runScriptResponse: IRunScriptResponse<any> =
-    await hiveClient.Scripting.RunScript<any>(script as IRunScriptData);
-
-  const { response } = runScriptResponse;
-
-  // tslint:disable-next-line:no-console
-  console.log(JSON.stringify(response));
 }
 
 export async function registerUpdateAttempt(
   did: string,
-  email: string,
   code: string
 ) {
   const hiveClient = await getNonAnonymousClient();
   const script = {
     name: "update_verify_user",
-    params: { did, email, code },
+    params: { did, code },
   };
 
   const runScriptResponse: IRunScriptResponse<any> =
@@ -400,11 +301,16 @@ export async function registerVerifyAttempt(
   email: string,
   phone: string,
   code: string,
-  did: string,
-  smsCode: boolean
+  did: string
 ): Promise<boolean> {
   const hiveClient = await getNonAnonymousClient();
-  const loginCred = smsCode ? { phone } : { email };
+  const loginCred = {};
+  if (phone && phone !== '') {
+    (loginCred as any).phone = phone
+  }
+  if (email && email !== '') {
+    (loginCred as any).email = email
+  }
   const script = {
     name: "add_user",
     params: {

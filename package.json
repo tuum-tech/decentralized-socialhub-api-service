@@ -1,6 +1,6 @@
 {
   "name": "profile-api-service",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Profile API Service",
   "main": "dist/index.js",
   "scripts": {
@@ -36,6 +36,7 @@
     "@types/node-fetch": "^2.5.8",
     "@types/nodemailer": "^6.4.1",
     "@types/oauth": "^0.9.1",
+    "@types/swig-email-templates": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -53,6 +54,7 @@
     "npm-run-all": "^4.1.5",
     "oauth": "^0.9.15",
     "rimraf": "^3.0.2",
+    "swig-email-templates": "^6.0.0",
     "tslint": "^6.1.3",
     "twilio": "^3.66.0",
     "typescript": "^4.2.3"
