@@ -1,8 +1,11 @@
-import { HiveClient, OptionsBuilder } from "@elastos/elastos-hive-js-sdk";
+import {
+  HiveClient,
+  OptionsBuilder,
+} from "@elastosfoundation/elastos-hive-js-sdk";
 import {
   IRunScriptData,
   IRunScriptResponse,
-} from "@elastos/elastos-hive-js-sdk/dist/Services/Scripting.Service";
+} from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
 import { config } from "dotenv/types";
 import tuumvaultRouter from "./tuumvault_router";
 import { ElastosClient } from "@elastosfoundation/elastos-js-sdk";
@@ -139,7 +142,7 @@ export function isTuumApi(serviceResponse: any) {
 export async function verifyUser(
   code: string,
   didV?: string,
-  phone?: string,
+  phone?: string
 ): Promise<any | undefined> {
   const hiveClient = await getNonAnonymousClient();
   const bySMSCode = didV && didV !== "" && phone && phone !== "";
@@ -241,7 +244,6 @@ export async function sendSMSCode(to: string, code: string) {
       from: process.env.TWILIO_PHONE_NUMBER,
       to,
     });
-
   } catch (e) {
     successed = false;
   }
@@ -401,7 +403,6 @@ export async function registerVerifyAttempt(
   did: string,
   smsCode: boolean
 ): Promise<boolean> {
-
   const hiveClient = await getNonAnonymousClient();
   const loginCred = smsCode ? { phone } : { email };
   const script = {
