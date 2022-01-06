@@ -20,7 +20,7 @@ import {
 } from "./v1/commom";
 import crypto from "crypto";
 import { scheduleUsersCleanUp } from "./scheduler/user-cleanup";
-import { DefaultDIDAdapter, DIDBackend } from "@elastosfoundation/did-js-sdk/";
+import { DefaultDIDAdapter, DIDBackend } from "@elastosfoundation/did-js-sdk";
 // import path from 'path';
 
 dotenv.config();
