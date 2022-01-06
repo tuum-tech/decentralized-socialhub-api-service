@@ -1,20 +1,15 @@
-import express, { request } from "express";
-import bodyParser from "body-parser";
-import { ElastosClient } from "@elastosfoundation/elastos-js-sdk";
-import jwt_decode from "jwt-decode";
+import express from "express";
 import { handleRoute, returnSuccess } from "./commom";
 import {
-  DIDBackend,
-  DefaultDIDAdapter,
+
   DID,
   DIDStore,
   DIDURL,
   Issuer,
-  RootIdentity,
+
   HDKey,
-  VerifiableCredential,
-  DIDDocument,
-} from "@elastosfoundation/did-js-sdk/";
+
+} from "@elastosfoundation/did-js-sdk";
 
 const didcredsRouter = express.Router();
 
@@ -83,7 +78,7 @@ didcredsRouter.post("/validation/internet_account", async (req, res) => {
 
   const vc = await vcBuilder
     .expirationDate(getExpirationDate())
-    .type(
+    .types(
       "BasicProfileCredential",
       "InternetAccountCredential",
       credentialName,
