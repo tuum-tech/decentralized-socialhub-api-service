@@ -6,7 +6,6 @@ import {
   IRunScriptData,
   IRunScriptResponse,
 } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
-
 import { ElastosClient } from "@elastosfoundation/elastos-js-sdk";
 import jwt_decode from "jwt-decode";
 import nodemailer from "nodemailer";
@@ -244,7 +243,6 @@ export async function sendSMSCode(to: string, code: string) {
       from: process.env.TWILIO_PHONE_NUMBER,
       to,
     });
-
   } catch (e) {
     // tslint:disable-next-line:no-console
     console.log("e", e);
