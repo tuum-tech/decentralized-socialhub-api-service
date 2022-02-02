@@ -21,7 +21,6 @@ publicStatsRouter.get('/get_new_users_by_date/:created', async (req, res) => {
   }
 
   const result = {
-    users: new Array(),
     count: 0,
   }
 
@@ -35,8 +34,6 @@ publicStatsRouter.get('/get_new_users_by_date/:created', async (req, res) => {
       const ed = new Date(req.params.created)
       ed.setDate(ed.getDate() + 1)
       endDate = Math.floor(ed.getTime())
-    } else {
-      delete result.users
     }
 
     const hiveClient = await getHiveClient()
@@ -47,9 +44,6 @@ publicStatsRouter.get('/get_new_users_by_date/:created', async (req, res) => {
       (item: any) =>
         item.created.$date >= startDate && item.created.$date < endDate
     )
-    if (created !== 'all') {
-      result.users = users
-    }
     result.count = users.length
   } catch (err: any) {
     // tslint:disable-next-line:no-console
@@ -85,7 +79,6 @@ publicStatsRouter.get(
     console.info(script)
 
     const result = {
-      users: new Array(),
       count: {
         [accountType]: 0,
       },
@@ -98,11 +91,9 @@ publicStatsRouter.get(
       let users = []
       if (accountType !== 'all') {
         users = response.response.get_users_by_account_type.items
-        result.users = users
         result.count[accountType] = users.length
       } else {
         users = response.response.get_all_users.items
-        delete result.users
         delete result.count[accountType]
         users.map((user: any) => {
           if (result.count.hasOwnProperty(user.accountType)) {
@@ -166,7 +157,6 @@ publicStatsRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
   }
 
   const result = {
-    users: new Array(),
     count: 0,
   }
   try {
@@ -179,8 +169,6 @@ publicStatsRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
       const ed = new Date(req.params.created)
       ed.setDate(ed.getDate() + 1)
       endDate = Math.floor(ed.getTime())
-    } else {
-      delete result.users
     }
 
     const hiveClient = await getHiveClient()
@@ -191,9 +179,6 @@ publicStatsRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
       (item: any) =>
         item.created.$date >= startDate && item.created.$date < endDate
     )
-    if (created !== 'all') {
-      result.users = users
-    }
     result.count = users.length
   } catch (err: any) {
     // tslint:disable-next-line:no-console
