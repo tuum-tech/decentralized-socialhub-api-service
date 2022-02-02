@@ -1,61 +1,14 @@
-import express, { request } from 'express'
+import express from 'express'
 import {
   IRunScriptData,
   IRunScriptResponse,
-  ISetScriptData,
-  ISetScriptResponse,
 } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
-import {
-  getHiveClient,
-  getToken,
-  handleHiveResponse,
-  handleRoute,
-  returnSuccess,
-} from './common'
+import { getHiveClient, returnSuccess } from './v1/common'
+import { resourceLimits } from 'worker_threads'
 
-const tuumvaultRouter = express.Router()
+const publicStatsRouter = express.Router()
 
-tuumvaultRouter.post('/scripting/set_script', async (req, res) => {
-  const hiveClient = await getHiveClient()
-  const response: ISetScriptResponse = await hiveClient.Scripting.SetScript(
-    req.body as ISetScriptData
-  )
-  returnSuccess(res, JSON.stringify(response))
-})
-
-tuumvaultRouter.post('/scripting/run_script', async (req, res) => {
-  // tslint:disable-next-line:no-console
-  console.info('Executing: /v1/scripting/run_script')
-
-  const hiveClient = await getHiveClient()
-  const response: IRunScriptResponse<any> =
-    await hiveClient.Scripting.RunScript<any>(req.body as IRunScriptData)
-
-  returnSuccess(res, response.response)
-})
-
-tuumvaultRouter.post(
-  '/scripting/run_script_upload/:transaction_id',
-  async (req, res) => {
-    const url = `${process.env.TUUMVAULT_API_URL}/api/v1/scripting/run_script_upload/{transaction_id}`
-    const token = await getToken()
-
-    const postData: any = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `token ${token}`,
-      },
-    }
-
-    const fetchResponse = await fetch(url, postData)
-    res.send(JSON.stringify(fetchResponse))
-
-    // const ret: any = await handleRoute(url, req.body, getDidcredsHeader(), false);
-  }
-)
-
-tuumvaultRouter.get('/get_new_users_by_date/:created', async (req, res) => {
+publicStatsRouter.get('/get_new_users_by_date/:created', async (req, res) => {
   // tslint:disable-next-line:no-console
   console.info('Executing: /v1/get_new_users_by_date')
 
@@ -106,16 +59,17 @@ tuumvaultRouter.get('/get_new_users_by_date/:created', async (req, res) => {
   returnSuccess(res, result)
 })
 
-tuumvaultRouter.get(
+publicStatsRouter.get(
   '/get_users_by_account_type/:account_type',
   async (req, res) => {
     // tslint:disable-next-line:no-console
     console.info('Executing: /v1/get_users_by_account_type')
 
+    const accountType = req.params.account_type
     const script = {
       name: 'get_users_by_account_type',
       params: {
-        accountType: req.params.account_type,
+        accountType,
       },
       context: {
         target_did: process.env.TUUMVAULT_DID,
@@ -123,17 +77,41 @@ tuumvaultRouter.get(
       },
     }
 
-    const result = {
-      users: new Array(),
-      count: 0,
+    if (accountType === 'all') {
+      script.name = 'get_all_users'
     }
 
+    // tslint:disable-next-line:no-console
+    console.info(script)
+
+    const result = {
+      users: new Array(),
+      count: {
+        [accountType]: 0,
+      },
+    }
     try {
       const hiveClient = await getHiveClient()
       const response: IRunScriptResponse<any> =
         await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
-      result.users = response.response.get_users_by_account_type.items
-      result.count = result.users.length
+
+      let users = []
+      if (accountType !== 'all') {
+        users = response.response.get_users_by_account_type.items
+        result.users = users
+        result.count[accountType] = users.length
+      } else {
+        users = response.response.get_all_users.items
+        delete result.users
+        delete result.count[accountType]
+        users.map((user: any) => {
+          if (result.count.hasOwnProperty(user.accountType)) {
+            result.count[user.accountType] += 1
+          } else {
+            result.count[user.accountType] = 1
+          }
+        })
+      }
     } catch (err: any) {
       // tslint:disable-next-line:no-console
       console.info('Error while getting users according to account type: ', err)
@@ -143,7 +121,7 @@ tuumvaultRouter.get(
   }
 )
 
-tuumvaultRouter.get('/get_users_with_nontuumvaults', async (req, res) => {
+publicStatsRouter.get('/get_users_with_nontuumvaults', async (req, res) => {
   // tslint:disable-next-line:no-console
   console.info('Executing: /v1/get_users_with_nontuumvaults')
 
@@ -159,15 +137,14 @@ tuumvaultRouter.get('/get_users_with_nontuumvaults', async (req, res) => {
   }
 
   const result = {
-    users: new Array(),
     count: 0,
   }
   try {
     const hiveClient = await getHiveClient()
     const response: IRunScriptResponse<any> =
       await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
-    result.users = response.response.get_users_with_othervaultsthanyourown.items
-    result.count = result.users.length
+    result.count =
+      response.response.get_users_with_othervaultsthanyourown.items.length
   } catch (err: any) {
     // tslint:disable-next-line:no-console
     console.info('Error while getting users with non tuum vaults: ', err)
@@ -176,7 +153,7 @@ tuumvaultRouter.get('/get_users_with_nontuumvaults', async (req, res) => {
   returnSuccess(res, result)
 })
 
-tuumvaultRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
+publicStatsRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
   // tslint:disable-next-line:no-console
   console.info('Executing: /v1/get_new_spaces_by_date')
 
@@ -226,4 +203,4 @@ tuumvaultRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
   returnSuccess(res, result)
 })
 
-export default tuumvaultRouter
+export default publicStatsRouter

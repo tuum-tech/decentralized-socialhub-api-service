@@ -8,6 +8,7 @@ import testRouter from './v1/test'
 import auth from './v1/auth'
 import cors from 'cors'
 import didcredsRouter from './v1/didcreds_router'
+import publicStatsRouter from './public_stats_router'
 import {
   getHiveClient,
   verifyCode,
@@ -68,6 +69,7 @@ app.use('/v1/assist_router', assistRouter)
 app.use('/v1/didcreds_router', didcredsRouter)
 app.use('/v1/auth', auth)
 app.use('/v1/support_router', supportRouter)
+app.use('/public_stats_router', publicStatsRouter)
 app.use('/v1/test', testRouter)
 
 // app.use(express.static(path.join(__dirname, '..', 'public', 'templates')));
