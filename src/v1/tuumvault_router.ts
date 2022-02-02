@@ -68,25 +68,37 @@ tuumvaultRouter.get('/get_new_users_by_date/:created', async (req, res) => {
     },
   }
 
-  const startDate = Math.floor(new Date(req.params.created).getTime())
-  const ed = new Date(req.params.created)
-  ed.setDate(ed.getDate() + 1)
-  const endDate = Math.floor(ed.getTime())
-
-  const hiveClient = await getHiveClient()
-  const response: IRunScriptResponse<any> =
-    await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
-
   const result = {
     users: new Array(),
     count: 0,
   }
+
   try {
-    result.users = response.response.get_all_users.items.filter(
+    let startDate = Math.floor(new Date('1970-01-01').getTime())
+    let endDate = Math.floor(new Date().getTime())
+
+    const created = req.params.created
+    if (created !== 'all') {
+      startDate = Math.floor(new Date(req.params.created).getTime())
+      const ed = new Date(req.params.created)
+      ed.setDate(ed.getDate() + 1)
+      endDate = Math.floor(ed.getTime())
+    } else {
+      delete result.users
+    }
+
+    const hiveClient = await getHiveClient()
+    const response: IRunScriptResponse<any> =
+      await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
+
+    const users = response.response.get_all_users.items.filter(
       (item: any) =>
         item.created.$date >= startDate && item.created.$date < endDate
     )
-    result.count = result.users.length
+    if (created !== 'all') {
+      result.users = users
+    }
+    result.count = users.length
   } catch (err: any) {
     // tslint:disable-next-line:no-console
     console.info('Error while getting new users for a specific date: ', err)
@@ -112,16 +124,15 @@ tuumvaultRouter.get(
       },
     }
 
-    const hiveClient = await getHiveClient()
-    const response: IRunScriptResponse<any> =
-      await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
-
     const result = {
       users: new Array(),
       count: 0,
     }
 
     try {
+      const hiveClient = await getHiveClient()
+      const response: IRunScriptResponse<any> =
+        await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
       result.users = response.response.get_users_by_account_type.items
       result.count = result.users.length
     } catch (err: any) {
@@ -148,15 +159,14 @@ tuumvaultRouter.get('/get_users_with_nontuumvaults', async (req, res) => {
     },
   }
 
-  const hiveClient = await getHiveClient()
-  const response: IRunScriptResponse<any> =
-    await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
-
   const result = {
     users: new Array(),
     count: 0,
   }
   try {
+    const hiveClient = await getHiveClient()
+    const response: IRunScriptResponse<any> =
+      await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
     result.users = response.response.get_users_with_othervaultsthanyourown.items
     result.count = result.users.length
   } catch (err: any) {
@@ -179,25 +189,36 @@ tuumvaultRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
     },
   }
 
-  const startDate = Math.floor(new Date(req.params.created).getTime())
-  const ed = new Date(req.params.created)
-  ed.setDate(ed.getDate() + 1)
-  const endDate = Math.floor(ed.getTime())
-
-  const hiveClient = await getHiveClient()
-  const response: IRunScriptResponse<any> =
-    await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
-
   const result = {
     users: new Array(),
     count: 0,
   }
   try {
-    result.users = response.response.get_all_spaces.items.filter(
+    let startDate = Math.floor(new Date('1970-01-01').getTime())
+    let endDate = Math.floor(new Date().getTime())
+
+    const created = req.params.created
+    if (created !== 'all') {
+      startDate = Math.floor(new Date(req.params.created).getTime())
+      const ed = new Date(req.params.created)
+      ed.setDate(ed.getDate() + 1)
+      endDate = Math.floor(ed.getTime())
+    } else {
+      delete result.users
+    }
+
+    const hiveClient = await getHiveClient()
+    const response: IRunScriptResponse<any> =
+      await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
+
+    const users = response.response.get_all_spaces.items.filter(
       (item: any) =>
         item.created.$date >= startDate && item.created.$date < endDate
     )
-    result.count = result.users.length
+    if (created !== 'all') {
+      result.users = users
+    }
+    result.count = users.length
   } catch (err: any) {
     // tslint:disable-next-line:no-console
     console.info('Error while getting new spaces for a specific date: ', err)
