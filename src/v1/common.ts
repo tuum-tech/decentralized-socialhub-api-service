@@ -373,6 +373,7 @@ export async function registerVerifyAttempt(
           },
         },
       },
+      spaces: [] as any[],
       userToken: "",
       isDIDPublished: "",
       isEssentialUser: false,
