@@ -33,7 +33,6 @@ supportRouter.get('/github/:owner/:repos/issues', async (req, res) => {
   const postData: any = {
     method: 'GET',
     headers: {
-      'Content-Type': 'multipart/form-data',
       Authorization:
         'Basic ' +
         Buffer.from(
@@ -42,11 +41,28 @@ supportRouter.get('/github/:owner/:repos/issues', async (req, res) => {
     },
   }
 
-  const fetchResponse = await fetch(
-    `https://api.github.com/repos/${req.params.owner}/${req.params.repos}/issues?state=all`,
-    postData
-  )
-  const response = await fetchResponse.json()
+  const fetchAllUrls = async (pages: number[]) => {
+    try {
+      const data = await Promise.all(
+        pages.map((page) =>
+          fetch(
+            `https://api.github.com/repos/${req.params.owner}/${req.params.repos}/issues?accept=application/vnd.github.v3+json&state=all&per_page=100&page=${page}`,
+            postData
+          ).then((r) => r.json())
+        )
+      )
+      return data
+    } catch (error) {
+      // tslint:disable-next-line:no-console
+      console.error(
+        'Error while executing: /v1/support_router/github/issues: ',
+        error
+      )
+      return []
+    }
+  }
+
+  const response = [].concat(...(await fetchAllUrls([1, 2, 3, 4, 5])))
 
   returnSuccess(res, response)
 })
