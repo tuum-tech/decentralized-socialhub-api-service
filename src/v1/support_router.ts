@@ -43,7 +43,7 @@ supportRouter.get('/github/:owner/:repos/issues', async (req, res) => {
   }
 
   const fetchResponse = await fetch(
-    `https://api.github.com/repos/${req.params.owner}/${req.params.repos}/issues`,
+    `https://api.github.com/repos/${req.params.owner}/${req.params.repos}/issues?state=all`,
     postData
   )
   const response = await fetchResponse.json()
