@@ -93,19 +93,18 @@ export function scheduleNFTCollectionAssetsUpdate() {
                   cursor = data.cursor
                   assets = assets.concat(
                     data.result.map((asset: any) => {
-                      if (asset.metadata) {
-                        const { image, name } = JSON.parse(asset.metadata)
+                      if (typeof asset === 'object') {
+                        const name = `${asset.name} #${asset.token_id}`
+                        let imageUrl = ''
+                        const metadata = JSON.parse(asset.metadata)
+                        if (metadata !== null) {
+                          imageUrl = metadata.image
+                        }
                         return {
                           name,
-                          image_url: image,
+                          image_url: imageUrl,
                           owner: asset.owner_of,
                           last_sale: asset.last_sale,
-                        }
-                      } else {
-                        return {
-                          name: slug,
-                          image_url: '',
-                          owner: '',
                         }
                       }
                     })
