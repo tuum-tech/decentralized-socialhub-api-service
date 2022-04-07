@@ -20,7 +20,7 @@ cp .env.example .env
 - Install dependencies
 
 ```
-npm i
+yarn
 ```
 
 - Start API server in development mode
