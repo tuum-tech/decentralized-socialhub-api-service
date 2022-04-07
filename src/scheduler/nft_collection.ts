@@ -18,15 +18,18 @@ export function scheduleNFTCollectionAssetsUpdate() {
         },
       });
     if (response.response._status !== "OK") return;
-    const collections = Promise.all(
+    // tslint:disable-next-line:no-console
+    console.log(
+      "=============== Starting To Get Collection Assets ================",
+      "\n"
+    );
+    const collections = await Promise.all(
       await response.response.get_nft_collection_spaces.items.map(
         async (space: any) => {
           const { network, slug, address } = space.meta;
           let assets: any[] = [];
           // tslint:disable-next-line:no-console
-          console.log(
-            `==============Starting To Get ${slug} Collection Assets================`
-          );
+          console.log(`fetching *${slug}* ...`);
           if (network.toLowerCase() === "ethereum") {
             let cursor = "";
             try {
@@ -109,9 +112,16 @@ export function scheduleNFTCollectionAssetsUpdate() {
                 target_app_did: `${process.env.TUUMVAULT_DID}`,
               },
             });
+            // tslint:disable-next-line:no-console
+            console.log(`all *${slug}* retrieved.`);
           }
         }
       )
+    );
+    // tslint:disable-next-line:no-console
+    console.log(
+      "\n",
+      "============================ Complete ============================"
     );
   });
 }
