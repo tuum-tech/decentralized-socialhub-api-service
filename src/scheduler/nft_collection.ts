@@ -74,6 +74,7 @@ export function scheduleNFTCollectionAssetsUpdate() {
             } else {
               // tslint:disable-next-line:no-console
               console.log(`${network} not currently supported`)
+              return
             }
             let cursor = ''
             try {
@@ -82,7 +83,8 @@ export function scheduleNFTCollectionAssetsUpdate() {
                 const result = await fetch(moralisAPIUrl, {
                   method: 'GET',
                   headers: {
-                    'x-api-key': process.env.MORALIS_API_KEY,
+                    accept: 'application/json',
+                    'X-API-Key': process.env.MORALIS_API_KEY,
                   },
                 })
                 const { status, statusText } = result
@@ -90,7 +92,7 @@ export function scheduleNFTCollectionAssetsUpdate() {
                   const data = await result.json()
                   cursor = data.cursor
                   assets = assets.concat(
-                    data.result.map(async (asset: any) => {
+                    data.result.map((asset: any) => {
                       if (asset.metadata) {
                         const { image, name } = JSON.parse(asset.metadata)
                         return {
