@@ -13,10 +13,10 @@ cd profile-api-service;
 
 ```
 cp .env.example .env
-# Use something like mailtrap to fill out the smtp server info on .env file with regards to EMAIL_ fields if you want to test email related functionalities
-# Use your own github api token for GITHUB_API fields if you want to test github related functionalities provided by the service
-# Generate your own Moralis API key at https://moralis.io/ and fill that on MORALIS_API_KEY
 ```
+- Use something like mailtrap to fill out the smtp server info on .env file with regards to EMAIL_ fields if you want to test email related functionalities
+- Use your own github api token for GITHUB_API fields if you want to test github related functionalities provided by the service
+- Generate your own Moralis API key at https://moralis.io/ and fill that on MORALIS_API_KEY
 
 - Modify .env file with your own values
 
