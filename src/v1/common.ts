@@ -381,6 +381,7 @@ export async function registerVerifyAttempt(
       hiveHost: "",
       avatar: "",
       timestamp: Date.now(),
+      referals: [] as string[]
     },
   };
 
