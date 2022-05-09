@@ -24,6 +24,7 @@ import { scheduleUsersCleanUp } from "./scheduler/user-cleanup";
 import { scheduleNFTCollectionAssetsUpdate } from "./scheduler/nft_collection";
 import { DefaultDIDAdapter, DIDBackend } from "@elastosfoundation/did-js-sdk";
 // import path from 'path';
+import matrixRouter from './v1/matrix_router';
 
 dotenv.config();
 
@@ -66,6 +67,7 @@ app.use("/v1", (req, res, next) => {
   }
 });
 
+app.use("/v1/matrix", matrixRouter);
 app.use("/v1/tuumvault_router", tuumvaultRouter);
 app.use("/v1/assist_router", assistRouter);
 app.use("/v1/didcreds_router", didcredsRouter);
@@ -74,6 +76,7 @@ app.use("/v1/support_router", supportRouter);
 app.use("/v1/nft_collection_router", NFTCollectionRouter);
 app.use("/public_stats_router", publicStatsRouter);
 app.use("/v1/test", testRouter);
+
 
 // app.use(express.static(path.join(__dirname, '..', 'public', 'templates')));
 
