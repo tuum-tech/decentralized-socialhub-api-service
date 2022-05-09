@@ -30,10 +30,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@elastosfoundation/did-js-sdk@^2.2.3":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@elastosfoundation/did-js-sdk/-/did-js-sdk-2.2.4.tgz#c41f19a13b4151c58160a3d28096b1e29623b5cd"
-  integrity sha512-ImWMsKenWg3aB1DQbTMVaps6+OQQb9vfkcOT/l+32Uxw7CWcct5rjxNdad7LD1Do8v4iyByF9oT7rujrQGYo5w==
+"@elastosfoundation/did-js-sdk@2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@elastosfoundation/did-js-sdk/-/did-js-sdk-2.2.3.tgz#504a446f745200d58d2d9deb61d9cae019c3560c"
+  integrity sha512-LYbpkmZxrIkpt3kOtM3yCN1iCNUQXZUg9KiU+eu9xxqVU9/0z99+j65E6syZpP3aFDn34MgUNNpyMnW22sIXTQ==
   dependencies:
     assert "^2.0.0"
     axios "^0.21.1"
