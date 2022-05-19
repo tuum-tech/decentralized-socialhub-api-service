@@ -26,16 +26,33 @@ matrixRouter.post('/auth', async (req, res) => {
       });
 
 
+    try {
+       
+        //TODO: verify/save on Profile hive users that already registered on Synapse
+        await client.register( userLogin, password, "", {type: ""})
+        
+    } catch (error) {
 
-    const registerItem = await client.register( userLogin, password, "", {type: ""})
+        //TODO: Verify what kind of error before continue
+    }
 
-    // tslint:disable-next-line:no-console
-    console.info(registerItem)
 
-    const ret: any = await handleRoute(url, req.body, {}, true);
+    
 
-    // tslint:disable-next-line:no-console
-    console.log(`Return: ${JSON.stringify(ret)}`);
+    const userClient = createClient(url);
+
+    const responseUserLogin = await userClient.login('m.login.password', {
+        user: userLogin,
+        password: password
+      });
+
+    
+
+    const ret: any = await handleRoute(url, {
+        access_token: responseUserLogin.access_token
+    }, {}, true);
+
+    
 
     returnSuccess(res, ret);
 });
