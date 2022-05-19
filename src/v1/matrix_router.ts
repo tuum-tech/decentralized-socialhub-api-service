@@ -27,32 +27,32 @@ matrixRouter.post('/auth', async (req, res) => {
 
 
     try {
-       
-        //TODO: verify/save on Profile hive users that already registered on Synapse
+
+        // TODO: verify/save on Profile hive users that already registered on Synapse
         await client.register( userLogin, password, "", {type: ""})
-        
+
     } catch (error) {
 
-        //TODO: Verify what kind of error before continue
+        // TODO: Verify what kind of error before continue
     }
 
 
-    
+
 
     const userClient = createClient(url);
 
     const responseUserLogin = await userClient.login('m.login.password', {
         user: userLogin,
-        password: password
+        password
       });
 
-    
+
 
     const ret: any = await handleRoute(url, {
         access_token: responseUserLogin.access_token
     }, {}, true);
 
-    
+
 
     returnSuccess(res, ret);
 });
