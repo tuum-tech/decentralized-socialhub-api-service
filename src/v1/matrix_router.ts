@@ -22,7 +22,7 @@ matrixRouter.post('/auth', async (req, res) => {
   let createNewUser = false;
 
   try {
-    
+
     const responseUserLogin = await client.login('m.login.password', {
         user: userLogin,
         password,
@@ -50,7 +50,7 @@ matrixRouter.post('/auth', async (req, res) => {
         })
 
         accessToken = responseUserLogin.access_token
-    
+
       } catch (error) {
         // TODO: Verify what kind of error before continue
         // tslint:disable-next-line:no-console
