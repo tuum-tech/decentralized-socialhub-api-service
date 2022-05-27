@@ -148,7 +148,7 @@ export function scheduleNFTCollectionAssetsUpdate() {
     const collections = await Promise.all(
       await response.response.get_nft_collection_spaces.items.map(
         async (space: any) => {
-          const { network, address, isOpenseaCollection, slug } = space.meta;
+          const { network, address, isOpenseaCollection, collectionSlug } = space.meta;
           let assets: any[] = [];
           // tslint:disable-next-line:no-console
           console.log(`fetching *${space.name}* ...`);
@@ -157,7 +157,7 @@ export function scheduleNFTCollectionAssetsUpdate() {
           } else {
             // use Opensea API
             if (isOpenseaCollection) {
-              assets = await getAssetsUsingOpenseaAPI(slug);
+              assets = await getAssetsUsingOpenseaAPI(collectionSlug);
             }
             // Else use Moralis API
             else {
