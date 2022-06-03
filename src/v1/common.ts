@@ -395,6 +395,7 @@ export async function registerVerifyAttempt(
       avatar: '',
       timestamp: Date.now(),
       referrals: [] as any[],
+      wallets: {}
     },
   }
 

@@ -1,0 +1,59 @@
+version: 1.0
+runtime: nodejs14
+build:
+  commands:
+    pre-build:
+      - yarn install --only=dev
+      - yarn run test
+    build:
+      - yarn install --production
+    #post-build:
+    #  - node node_modules/ejs/postinstall.js
+  env:
+    - name: MY_VAR_EXAMPLE
+      value: "example"
+run:
+  runtime-version: 14.19.1
+  command: yarn start
+  network:
+    port: 8082
+    env: SERVER_PORT
+  env:
+    - name: SERVER_PORT
+      value: "8082"
+    - name: ASSIST_API_URL
+      value: "https://assist-restapi.tuum.tech"
+    - name: TUUMVAULT_API_URL
+      value: "https://vault.tuum.tech"
+    - name: TUUMVAULT_DID
+      value: "did:elastos:iWVvoZDN7zDoEGLNafwf5WTHkJmQWfE8QY"
+    - name: TUUMVAULT_APP_DID
+      value: "did:elastos:iWVvoZDN7zDoEGLNafwf5WTHkJmQWfE8QY"
+    - name: TWITTER_CALLBACK_URL
+      value: "https://profile.site/twitter_callback"
+    - name: LINKEDIN_CALLBACK_URL
+      value: "https://profile.site/linkedin_callback"
+    - name: GOOGLE_CALLBACK_URL
+      value: "https://profile.site/google_callback"
+    - name: FACEBOOK_CALLBACK_URL
+      value: "https://profile.site/facebook_callback"
+    - name: GITHUB_CALLBACK_URL
+      value: "https://profile.site/github_callback"
+    - name: DISCORD_CALLBACK_URL
+      value: "https://profile.site/discord_callback"
+    - name: EMAIL_VERIFICATION_CALLBACK
+      value: "https://www.profile.site/verify/email"
+    - name: EMAIL_UPDATE_CALLBACK
+      value: "https://www.profile.site/update/email"
+    - name: EMAIL_SENDER
+      value: "dev-support@tuum.tech"
+    - name: EMAIL_SMTP_SERVER
+      value: "email-smtp.us-east-1.amazonaws.com"
+    - name: EMAIL_SMTP_PORT
+      value: "587"
+    - name: EMAIL_SMTP_TLS
+      value: "True"
+    - name: EMAIL_CONTACT
+      value: "contact@tuum.tech"
+    - name: DID_STORE_PATH
+      value: "./didstore"
