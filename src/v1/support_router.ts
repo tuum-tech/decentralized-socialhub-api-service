@@ -95,4 +95,22 @@ supportRouter.get(
   }
 )
 
+supportRouter.get(
+  '/version',
+  async (req, res) => {
+    const response = {
+      latestVersion: '1.5.11',
+      releaseNotes: [
+        'NFT Introduced: Now showcase your NFTs under your profile.',
+        'Automatically select a portion of your image as you hover over it and click. Saves time while making complex edits and delivers faster results.',
+        'Import playable Lottie animations right into your prototype for lifelike motion',
+        'Fine-tune the size and quality of your images with enhanced export controls.',
+        'Runs natively on Apple Silicon devices. Experience faster load times, smoother navigation, and quick rendering.'
+      ],
+      videoUpdateUrl: 'https://www.youtube.com/embed/tgbNymZ7vqY'
+    }
+    returnSuccess(res, response)
+  }
+)
+
 export default supportRouter
