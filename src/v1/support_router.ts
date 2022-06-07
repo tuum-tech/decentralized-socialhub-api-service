@@ -95,22 +95,22 @@ supportRouter.get(
   }
 )
 
-supportRouter.get(
-  '/version',
-  async (req, res) => {
-    const response = {
-      latestVersion: '1.5.11',
-      releaseNotes: [
-        'NFT Introduced: Now showcase your NFTs under your profile.',
-        'Automatically select a portion of your image as you hover over it and click. Saves time while making complex edits and delivers faster results.',
-        'Import playable Lottie animations right into your prototype for lifelike motion',
-        'Fine-tune the size and quality of your images with enhanced export controls.',
-        'Runs natively on Apple Silicon devices. Experience faster load times, smoother navigation, and quick rendering.'
-      ],
-      videoUpdateUrl: 'https://www.youtube.com/embed/tgbNymZ7vqY'
-    }
-    returnSuccess(res, response)
+supportRouter.get('/version', async (req, res) => {
+  const response = {
+    latestVersion: '1.26.0',
+    releaseNotes: [
+      'Updated private spaces to have all the same features as community spaces such as being able to post and to link various social media sites to the space',
+      'Updated space pages to be more mobile responsive',
+      'Added search feature to Explore > Spaces, Connections and Spaces pages so users can now search for any people or any spaces within Profile',
+      'Updated profile templates on profile manager page',
+      'Fixed a bug whereby Connections page was crashing upon searching for spaces',
+      'Added home tab to private spaces so owners and members of private spaces can create new discussion posts and followers can comment on these posts. This is the same feature that was already available to NFT collection spaces a while ago',
+      'Added Cryptohoodieman and Maskhuman to NFT collection spaces',
+      'Integrated new design for Referral page under Activities > Referrals',
+    ],
+    videoUpdateUrl: 'https://www.youtube.com/watch?v=1LlMPXi-7J4',
   }
-)
+  returnSuccess(res, response)
+})
 
 export default supportRouter
