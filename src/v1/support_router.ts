@@ -99,7 +99,9 @@ supportRouter.get('/version', async (req, res) => {
   const response = {
     latestVersion: '1.26.0',
     releaseNotes: [
-      'Updated private spaces to have all the same features as community spaces such as being able to post and to link various social media sites to the space',
+      'Added social links and posts feature to private spaces and Welcome to Profile space(previously, these features only worked for NFT Collection spaces)',
+      'Created a generic tooling library to store stuff like Logger, CacheManager, ConfigurationManager, Base64/SHA256, FileSystem, HttpClient, etc. This removes the duplicated code we have in different projects also introduces standards in some basic elements. The code is open source at https://github.com/tuum-tech/Elastos.Common.JS.Tools',
+      'Added a new feature to Profile whereby upon new release of the webapp, the user will get notified of the new release including detailed release notes and a small video to explain that update. We will start to utilize this method to let users know of all the new updates that come to Profile from now on',
       'Updated space pages to be more mobile responsive',
       'Added search feature to Explore > Spaces, Connections and Spaces pages so users can now search for any people or any spaces within Profile',
       'Updated profile templates on profile manager page',
@@ -108,7 +110,7 @@ supportRouter.get('/version', async (req, res) => {
       'Added Cryptohoodieman and Maskhuman to NFT collection spaces',
       'Integrated new design for Referral page under Activities > Referrals',
     ],
-    videoUpdateUrl: 'https://www.youtube.com/watch?v=1LlMPXi-7J4',
+    videoUpdateUrl: 'https://www.youtube.com/embed/1LlMPXi-7J4',
   }
   returnSuccess(res, response)
 })
