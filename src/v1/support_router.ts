@@ -96,10 +96,12 @@ supportRouter.get(
 )
 
 supportRouter.get(
-  '/version',
+  '/version/releaseNotes',
   async (req, res) => {
+    const version = req.query.version
+    // TODO connect DB and get data by version
     const response = {
-      latestVersion: '1.5.11',
+      latestVersion: version === 'latest' ? '1.5.11' : version, // TODO
       releaseNotes: [
         'NFT Introduced: Now showcase your NFTs under your profile.',
         'Automatically select a portion of your image as you hover over it and click. Saves time while making complex edits and delivers faster results.',
