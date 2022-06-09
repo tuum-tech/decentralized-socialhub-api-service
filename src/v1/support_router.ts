@@ -95,9 +95,12 @@ supportRouter.get(
   }
 )
 
-supportRouter.get('/version', async (req, res) => {
+supportRouter.get('/version/releaseNotes', async (req, res) => {
+  const version = req.query.version
+  // TODO connect DB and get data by version
+
   const response = {
-    latestVersion: '1.26.1',
+    latestVersion: version === 'latest' ? '1.26.1' : version, // TODO
     releaseNotes: [
       'Added social links and posts feature to private spaces and Welcome to Profile space(previously, these features only worked for NFT Collection spaces)',
       'Created a generic tooling library to store stuff like Logger, CacheManager, ConfigurationManager, Base64/SHA256, FileSystem, HttpClient, etc. This removes the duplicated code we have in different projects also introduces standards in some basic elements. The code is open source at https://github.com/tuum-tech/Elastos.Common.JS.Tools',
