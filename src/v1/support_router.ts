@@ -95,24 +95,27 @@ supportRouter.get(
   }
 )
 
-supportRouter.get(
-  '/version/releaseNotes',
-  async (req, res) => {
-    const version = req.query.version
-    // TODO connect DB and get data by version
-    const response = {
-      latestVersion: version === 'latest' ? '1.5.11' : version, // TODO
-      releaseNotes: [
-        'NFT Introduced: Now showcase your NFTs under your profile.',
-        'Automatically select a portion of your image as you hover over it and click. Saves time while making complex edits and delivers faster results.',
-        'Import playable Lottie animations right into your prototype for lifelike motion',
-        'Fine-tune the size and quality of your images with enhanced export controls.',
-        'Runs natively on Apple Silicon devices. Experience faster load times, smoother navigation, and quick rendering.'
-      ],
-      videoUpdateUrl: 'https://www.youtube.com/embed/tgbNymZ7vqY'
-    }
-    returnSuccess(res, response)
+supportRouter.get('/version/releaseNotes', async (req, res) => {
+  const version = req.query.version
+  // TODO connect DB and get data by version
+
+  const response = {
+    latestVersion: version === 'latest' ? '1.26.1' : version, // TODO
+    releaseNotes: [
+      'Added social links and posts feature to private spaces and Welcome to Profile space(previously, these features only worked for NFT Collection spaces)',
+      'Created a generic tooling library to store stuff like Logger, CacheManager, ConfigurationManager, Base64/SHA256, FileSystem, HttpClient, etc. This removes the duplicated code we have in different projects also introduces standards in some basic elements. The code is open source at https://github.com/tuum-tech/Elastos.Common.JS.Tools',
+      'Added a new feature to Profile whereby upon new release of the webapp, the user will get notified of the new release including detailed release notes and a small video to explain that update. We will start to utilize this method to let users know of all the new updates that come to Profile from now on',
+      'Updated space pages to be more mobile responsive',
+      'Added search feature to Explore > Spaces, Connections and Spaces pages so users can now search for any people or any spaces within Profile',
+      'Updated profile templates on profile manager page',
+      'Fixed a bug whereby Connections page was crashing upon searching for spaces',
+      'Added home tab to private spaces so owners and members of private spaces can create new discussion posts and followers can comment on these posts. This is the same feature that was already available to NFT collection spaces a while ago',
+      'Added Cryptohoodieman and Maskhuman to NFT collection spaces',
+      'Integrated new design for Referral page under Activities > Referrals',
+    ],
+    videoUpdateUrl: 'https://www.youtube.com/embed/1LlMPXi-7J4',
   }
-)
+  returnSuccess(res, response)
+})
 
 export default supportRouter
