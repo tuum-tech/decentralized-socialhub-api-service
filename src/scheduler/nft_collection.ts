@@ -82,8 +82,6 @@ const getAssetsUsingMoralisAPI = async (
           }
         })
       )
-      // tslint:disable-next-line:no-console
-      console.log(data.page, data.page_size, data.result.length, assets.length)
     } else {
       cursor = ''
     }
@@ -136,8 +134,6 @@ const getAssetsUsingOpenseaAPI = async (slug: string) => {
             }
           })
         )
-        // tslint:disable-next-line:no-console
-        console.log(cursor, 50, data.assets.length, assets.length)
       } else {
         cursor = ''
       }
