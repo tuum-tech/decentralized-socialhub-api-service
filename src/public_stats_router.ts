@@ -6,7 +6,7 @@ import {
   ISetScriptResponse,
 } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
 import { getHiveClient, getToken, returnSuccess } from './v1/common'
-import { globalData } from './global'
+import { globalData } from './global_data'
 
 const publicStatsRouter = express.Router()
 

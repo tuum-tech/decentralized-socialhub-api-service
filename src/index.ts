@@ -20,8 +20,8 @@ import {
   sendCreateUserVerification,
 } from './v1/common'
 import crypto from 'crypto'
-import { initializeGlobalData } from './global'
-import { scheduleStatsCalculation } from './scheduler/profile_stats'
+import { initializeGlobalData } from './global_data'
+import { scheduleProfileStatsCalculation } from './scheduler/profile_stats'
 import { scheduleNFTCollectionAssetsUpdate } from './scheduler/nft_collection'
 import { DefaultDIDAdapter, DIDBackend } from '@elastosfoundation/did-js-sdk'
 // import path from 'path';
@@ -158,8 +158,8 @@ app.listen(port, () => {
   console.log(`Profile Api Service listening on port ${port}!`)
 
   initializeGlobalData()
-  scheduleStatsCalculation()
-  // scheduleNFTCollectionAssetsUpdate();
+  scheduleProfileStatsCalculation()
+  scheduleNFTCollectionAssetsUpdate()
 
   // initialize DIDBackend
   DIDBackend.initialize(new DefaultDIDAdapter('mainnet'))
