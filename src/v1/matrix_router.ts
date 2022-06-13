@@ -1,7 +1,9 @@
 import express, { request } from 'express'
 import { createClient, EventTimeline, MatrixClient } from 'matrix-js-sdk'
 import bcrypt from 'bcrypt'
-import { handleRoute, returnSuccess } from './common'
+import { handleRoute, returnSuccess, returnError } from './common';
+import fetch from 'node-fetch';
+import crypto from 'crypto';
 const matrixRouter = express.Router()
 
 interface IMatrixAuth {
@@ -13,6 +15,7 @@ matrixRouter.post('/auth', async (req, res) => {
   console.info('Executing: /v1/matrix_router/auth')
   const did = req.body.did as string
   const url = `${process.env.SYNAPSE_API_URL}`
+  const registerUrl = `${url}/_synapse/admin/v1/register`
   const client = createClient(url)
   const userLogin = did.replace('did:elastos:', '').toLowerCase()
   const password = bcrypt.hashSync(`${did}_${process.env.TUUMVAULT_DID}`, process.env.SYNAPSE_PASSWORD_SALT)
@@ -37,19 +40,42 @@ matrixRouter.post('/auth', async (req, res) => {
 
   if (createNewUser){
     try {
-        await client.login('m.login.password', {
-          user: `${process.env.SYNAPSE_ROOT_USER}`,
-          password: `${process.env.SYNAPSE_ROOT_PASSWORD}`,
-        })
 
-        await client.register(userLogin, password, '', { type: 'm.login.dummy' })
-        const userClient = createClient(url)
-        const responseUserLogin = await userClient.login('m.login.password', {
-          user: userLogin,
-          password,
-        })
+        // Documentation: https://matrix-org.github.io/synapse/latest/admin_api/register_api.html
 
-        accessToken = responseUserLogin.access_token
+        const registerNonceResponse = await fetch(registerUrl)
+        const registerNonceJson = await registerNonceResponse.json();
+        const hmac = crypto.createHmac("sha1", process.env.SYNAPSE_SHARED_SECRET)
+                         .update(Buffer.from(registerNonceJson.nonce, 'utf8'))
+                         .update(Buffer.from("\x00", 'binary'))
+                         .update(Buffer.from(userLogin, 'utf8'))
+                         .update(Buffer.from("\x00", 'binary'))
+                         .update(Buffer.from(password, 'utf8'))
+                         .update(Buffer.from("\x00", 'binary'))
+                         .update(Buffer.from("notadmin", 'utf8'))
+                         .digest('hex');
+
+        // TODO: Remove before production
+        // tslint:disable-next-line:no-console
+        console.log("hmac", hmac)
+
+
+        const registerRequestResponse = await client.registerRequest({
+          "nonce": registerNonceJson.nonce,
+          "username": userLogin,
+          "displayname": userLogin,
+          "password": password,
+          "admin": false,
+          "mac": hmac
+        });
+
+
+        // TODO: Remove before production
+        // tslint:disable-next-line:no-console
+        console.log("RESPONSE", registerRequestResponse)
+
+
+        accessToken = registerRequestResponse.access_token
 
       } catch (error) {
         // TODO: Verify what kind of error before continue
@@ -57,6 +83,8 @@ matrixRouter.post('/auth', async (req, res) => {
         console.log(
           `Error while trying to register profile user "${userLogin}": ${error.toString()}`
         )
+        returnError(res, {message:  `Error while trying to register profile user "${userLogin}"`})
+        return
       }
   }
 
