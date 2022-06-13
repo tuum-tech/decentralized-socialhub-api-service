@@ -42,16 +42,15 @@ matrixRouter.post('/auth', async (req, res) => {
     try {
 
         // Documentation: https://matrix-org.github.io/synapse/latest/admin_api/register_api.html
-
         const registerNonceResponse = await fetch(registerUrl)
         const registerNonceJson = await registerNonceResponse.json();
         const hmac = crypto.createHmac("sha1", process.env.SYNAPSE_SHARED_SECRET)
                          .update(Buffer.from(registerNonceJson.nonce, 'utf8'))
-                         .update(Buffer.from("\x00", 'binary'))
+                         .update(Buffer.from([0x00]))
                          .update(Buffer.from(userLogin, 'utf8'))
-                         .update(Buffer.from("\x00", 'binary'))
+                         .update(Buffer.from([0x00]))
                          .update(Buffer.from(password, 'utf8'))
-                         .update(Buffer.from("\x00", 'binary'))
+                         .update(Buffer.from([0x00]))
                          .update(Buffer.from("notadmin", 'utf8'))
                          .digest('hex');
 
@@ -70,7 +69,7 @@ matrixRouter.post('/auth', async (req, res) => {
         });
 
 
-        // TODO: Remove before production
+
         // tslint:disable-next-line:no-console
         console.log("RESPONSE", registerRequestResponse)
 
