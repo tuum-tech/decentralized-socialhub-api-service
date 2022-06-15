@@ -3,7 +3,7 @@ import {
   IRunScriptResponse,
 } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
 import cron from 'node-cron'
-import { getHiveClient, getNonAnonymousClient } from '../v1/common'
+import { getHiveClient, getNonAnonymousClient } from '../common'
 
 export function scheduleUsersCleanUp() {
   cron.schedule('0 * * * *', async () => {

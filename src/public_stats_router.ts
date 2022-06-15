@@ -3,7 +3,7 @@ import {
   IRunScriptData,
   IRunScriptResponse,
 } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
-import { getHiveClient, returnSuccess } from './v1/common'
+import { getHiveClient, returnSuccess } from "./common";
 import { resourceLimits } from 'worker_threads'
 
 const publicStatsRouter = express.Router()

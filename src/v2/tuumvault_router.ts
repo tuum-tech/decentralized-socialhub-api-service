@@ -7,13 +7,53 @@ import {
 } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
 import {
   getHiveClient,
+  getHiveClientV2,
   getToken,
   handleHiveResponse,
   handleRoute,
   returnSuccess,
 } from '../common'
 
+import { Logger } from "@tuum-tech/commons.js.tools";
+import { AppVaultScripts } from './appvault.scripts';
+
 const tuumvaultRouter = express.Router()
+
+const LOG = new Logger('tuum-router');
+
+
+
+tuumvaultRouter.post('/setup', async (req, res) => {
+
+  LOG.info("Executing: /v2/setup");
+
+  let ret = "";
+  try {
+    const client = await getHiveClientV2();
+    let vaultInfo: any = "";
+    try {
+      vaultInfo = await client.VaultSubscription.checkSubscription();
+
+    } catch(e) {
+      LOG.error("check subscription exception");
+    }
+    if (vaultInfo === "") {
+      vaultInfo = await client.VaultSubscription.subscribe();
+      ret = "subscribed";
+    }
+
+    const appVaultScripts = new AppVaultScripts();
+    appVaultScripts.Execute(client);
+
+
+  } catch(e){
+    LOG.error("Error executing setup" + e);
+    ret = "error";
+  }
+
+  res.send(ret);
+});
+
 
 tuumvaultRouter.post('/scripting/set_script', async (req, res) => {
   const hiveClient = await getHiveClient()

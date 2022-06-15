@@ -2,6 +2,11 @@ import {
   HiveClient,
   OptionsBuilder,
 } from '@elastosfoundation/elastos-hive-js-sdk'
+
+import {
+  HiveClient as HiveClientV2,
+} from './hiveClient'
+
 import {
   IRunScriptData,
   IRunScriptResponse,
@@ -11,11 +16,17 @@ import jwt_decode from 'jwt-decode'
 import nodemailer from 'nodemailer'
 import EmailTemplates from 'swig-email-templates'
 import path from 'path'
+import { HiveClientParameters } from './hiveclientparameters';
+import { CacheManager, Logger } from '@tuum-tech/commons.js.tools'
 
 const templateDir = path.join(__dirname, '..', '..', 'public', 'templates')
 const templates = new EmailTemplates({
   root: templateDir,
 })
+
+
+const LOG = new Logger('commons');
+
 
 export interface TuumTechResponse {
   meta: {
@@ -412,6 +423,37 @@ export async function registerVerifyAttempt(
   // tslint:disable-next-line:no-console
   console.log(JSON.stringify(inserted_id))
   return inserted_id !== undefined
+}
+
+export async function getHiveClientV2(): Promise<HiveClientV2> {
+
+  let hiveClient: any = CacheManager.get("appHiveClient");
+  if (hiveClient === undefined){
+
+    const appParameters: HiveClientParameters = {
+      context: {
+        storePath: `${process.env.DID_STORE_PATH}`,
+        appDID: `${process.env.TUUMVAULT_APP_DID}`,
+        appMnemonics: `${process.env.TUUMVAULT_MNEMONIC}`,
+        appPhrasePass: `${process.env.TUUMVAULT_DID_PASSPRASE}`,
+        userDID: `${process.env.TUUMVAULT_APP_DID}`,
+        appStorePass: `${process.env.DID_STORE_PASSWORD}`,
+        userMnemonics: `${process.env.TUUMVAULT_MNEMONIC}`,
+        userPhrasePass: `${process.env.TUUMVAULT_DID_PASSPRASE}`,
+        userStorePass: `${process.env.DID_STORE_PASSWORD}`
+      },
+      hiveHost: `${process.env.TUUMVAULT_API_URL}`,
+      resolverCache: `${process.env.HIVE_CACHE_DIR}`,
+      resolverUrl: `${process.env.HIVE_RESOLVER_URL}`
+    };
+
+    hiveClient = await HiveClientV2.createInstance(appParameters);
+    CacheManager.set("appHiveClient", hiveClient);
+  } else {
+    LOG.info("Returning hiveClient from cache");
+  }
+  return hiveClient;
+
 }
 
 export async function getHiveClient(): Promise<HiveClient> {

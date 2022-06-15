@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import tuumvaultRouter from "./v1/tuumvault_router";
+import tuumvaultRouterV2 from "./v2/tuumvault_router";
 import supportRouter from "./v1/support_router";
 import NFTCollectionRouter from "./v1/nft_collection_router";
 import assistRouter from "./v1/assist_router";
@@ -18,7 +19,7 @@ import {
   returnError,
   returnSuccess,
   sendCreateUserVerification,
-} from "./v1/common";
+} from "./common";
 import crypto from "crypto";
 import { scheduleUsersCleanUp } from "./scheduler/user-cleanup";
 import { scheduleNFTCollectionAssetsUpdate } from "./scheduler/nft_collection";
@@ -74,6 +75,8 @@ app.use("/v1/support_router", supportRouter);
 app.use("/v1/nft_collection_router", NFTCollectionRouter);
 app.use("/public_stats_router", publicStatsRouter);
 app.use("/v1/test", testRouter);
+
+app.use("/v2/tuumvault_router", tuumvaultRouterV2);
 
 // app.use(express.static(path.join(__dirname, '..', 'public', 'templates')));
 
