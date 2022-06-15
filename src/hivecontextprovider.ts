@@ -52,18 +52,6 @@ import { Logger } from '@tuum-tech/commons.js.tools';
         this.contextParameters.appStorePass
       );
       HiveContextProvider.LOG.debug('Init app private identity');
-
-      if (this.contextParameters.userMnemonics !== '') {
-        // this.userRootId = await this.initPrivateIdentity(
-        //   this.contextParameters.userMnemonics,
-        //   this.contextParameters.userDID,
-        //   this.contextParameters.userPhrasePass,
-        //   this.contextParameters.userStorePass
-        // );
-        // await this.initDid(this.userRootId);
-      }
-      HiveContextProvider.LOG.debug('Init user private identity');
-
       await this.initDid(this.appRootId);
     }
 
@@ -121,10 +109,10 @@ import { Logger } from '@tuum-tech/commons.js.tools';
     }
 
     public async initDid(rootIdentity: RootIdentity): Promise<void> {
-      HiveContextProvider.LOG.trace(`initDid ${process.env.REACT_APP_APPLICATION_DID}`);
+      HiveContextProvider.LOG.trace(`initDid ${this.contextParameters.appDID}`);
 
 
-      const did: DID = DID.from(`${process.env.REACT_APP_APPLICATION_DID}`) as DID;
+      const did: DID = DID.from(`${this.contextParameters.appDID}`) as DID;
 
 
 
@@ -230,7 +218,7 @@ import { Logger } from '@tuum-tech/commons.js.tools';
               userMnemonic,
               password,
               this.store as DIDStore,
-              process.env.REACT_APP_APPLICATION_STORE_PASS as string
+              this.contextParameters.appStorePass
             );
 
         const userDid = rootIdentityUser.getDid(0);
@@ -262,7 +250,7 @@ import { Logger } from '@tuum-tech/commons.js.tools';
               doc.getSubject().toString()
             ) as DIDURL
           )
-          .seal(process.env.REACT_APP_APPLICATION_STORE_PASS as string); // and we sign so it creates a Proof with method and signature
+          .seal(this.contextParameters.appStorePass); // and we sign so it creates a Proof with method and signature
 
         await this.store?.storeCredential(vc);
 
@@ -275,7 +263,7 @@ import { Logger } from '@tuum-tech/commons.js.tools';
           .realm(issuer)
           .nonce(nonce)
           .credentials(vc)
-          .seal(process.env.REACT_APP_APPLICATION_STORE_PASS as string);
+          .seal(this.contextParameters.appStorePass);
 
         // console.log('vp: ' + vp.toString(true));
         return vp;
@@ -284,54 +272,11 @@ import { Logger } from '@tuum-tech/commons.js.tools';
       }
     }
 
-    // // Copied from did.service.new.ts
-    // private async generateVerifiablePresentationFromEssentialCred(
-    //   issuer: string,
-    //   nonce: string
-    // ): Promise<any> {
-    //   HiveContextProvider.LOG.trace(
-    //     'generateVerifiablePresentationFromEssentialCred'
-    //   );
-    //   const appDid = process.env.REACT_APP_APPLICATION_DID as string;
-    //   const appDidInstance = (await this.store?.loadDid(appDid)) as DIDDocument;
 
-    //   const didAccess = new CNDID.DIDAccess();
-    //   const vc: VerifiableCredential = await didAccess.generateAppIdCredential();
-
-    //   await this.store!.storeCredential(vc);
-
-    //   const response = await didAccess.getExistingAppInstanceDIDInfo();
-    //   const didStore = await DIDStore.open(response.storeId);
-
-    //   const vpb = await VerifiablePresentation.createFor(
-    //     response.didString,
-    //     null,
-    //     didStore
-    //   );
-
-    //   const vp = await vpb
-    //     .realm(issuer)
-    //     .nonce(nonce)
-    //     .credentials(vc)
-    //     .seal(response.storePassword);
-
-    //   return vp;
-    // }
 
     private async getAppDocument(): Promise<DIDDocument> {
       HiveContextProvider.LOG.trace('getAppDocument');
-
-      // if (this.contextParameters.userMnemonics === '') {
-      //   const didAccess = new CNDID.DIDAccess();
-      //   const appInstanceDIDInfo = await didAccess.getOrCreateAppInstanceDID();
-
-      // //  console.log("hiveauthhelper", "Getting app instance DID document");
-      //   const didDocument = await appInstanceDIDInfo.didStore.loadDid(appInstanceDIDInfo.did.toString());
-      // //  console.log("hiveauthhelper", "Got app instance DID document. Now creating the Hive client", didDocument.toJSON());
-      //   return didDocument;
-      // } else {
-        return await this.store!.loadDid(this.contextParameters.appDID);
-      // }
+      return await this.store!.loadDid(this.contextParameters.appDID);
     }
 
     private async createToken(

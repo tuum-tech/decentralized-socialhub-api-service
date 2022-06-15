@@ -8,22 +8,22 @@ import { HiveClientParameters } from "./hiveclientparameters";
 
 
 
-  const environmentParameters: HiveClientParameters = {
-    hiveHost: process.env.REACT_APP_HIVE_HOST as string,
-    resolverUrl: process.env.REACT_APP_HIVE_RESOLVER_URL as string,
-    resolverCache: process.env.REACT_APP_HIVE_CACHE_DIR as string,
-    context: {
-      storePath: process.env.REACT_APP_APPLICATION_STORE_PATH,
-      appDID: process.env.REACT_APP_APPLICATION_DID,
-      appMnemonics: process.env.REACT_APP_APPLICATION_MNEMONICS,
-      appPhrasePass: process.env.REACT_APP_APPLICATION_PASSPHRASE,
-      appStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS,
-      userDID: '',
-      userMnemonics: '', // 'web text team glue winner violin zebra case long alert share afford',
-      userPhrasePass: '',
-      userStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS
-    } as AppContextParameters
-  };
+  // const environmentParameters: HiveClientParameters = {
+  //   hiveHost: process.env.REACT_APP_HIVE_HOST as string,
+  //   resolverUrl: process.env.REACT_APP_HIVE_RESOLVER_URL as string,
+  //   resolverCache: process.env.REACT_APP_HIVE_CACHE_DIR as string,
+  //   context: {
+  //     storePath: process.env.REACT_APP_APPLICATION_STORE_PATH,
+  //     appDID: process.env.REACT_APP_APPLICATION_DID,
+  //     appMnemonics: process.env.REACT_APP_APPLICATION_MNEMONICS,
+  //     appPhrasePass: process.env.REACT_APP_APPLICATION_PASSPHRASE,
+  //     appStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS,
+  //     userDID: '',
+  //     userMnemonics: '', // 'web text team glue winner violin zebra case long alert share afford',
+  //     userPhrasePass: '',
+  //     userStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS
+  //   } as AppContextParameters
+  // };
 
   export const appParameters: HiveClientParameters = {
     hiveHost: process.env.REACT_APP_HIVE_HOST as string,
@@ -168,9 +168,7 @@ import { HiveClientParameters } from "./hiveclientparameters";
 
       if (!hiveClient) {
         HiveClient.LOG.debug('Creating new HiveClient instance...');
-        const instanceAppContextParameters = HiveClient.resolveDefaultParameters(
-          appContextParameters
-        );
+        const instanceAppContextParameters = appContextParameters;
         HiveClient.LOG.debug(
           'Initializing resolver with {} and {} ...',
           instanceAppContextParameters.resolverUrl,
@@ -226,37 +224,37 @@ import { HiveClientParameters } from "./hiveclientparameters";
       // return '2.7.2';
     }
 
-    private static resolveDefaultParameters(
-      hiveClientParameters?: HiveClientParameters
-    ): HiveClientParameters {
-      HiveClient.LOG.trace('resolveDefaultParameters');
-      if (!hiveClientParameters) return environmentParameters;
-      for (const defaultPropertyKey in environmentParameters) {
-        if (environmentParameters.hasOwnProperty(defaultPropertyKey)) {
-        const key = defaultPropertyKey as keyof HiveClientParameters;
-        if (key === 'context') {
-          if (!hiveClientParameters.context) {
-            hiveClientParameters.context = environmentParameters.context;
-          } else {
-            const appContextParameters = hiveClientParameters.context;
-            for (const defaultContextPropertyKey in environmentParameters.context) {
-              if (environmentParameters.context.hasOwnProperty(defaultContextPropertyKey)){
-                const contextKey = defaultContextPropertyKey as keyof AppContextParameters;
-                if (!appContextParameters[contextKey]) {
-                  appContextParameters[contextKey] = environmentParameters.context[contextKey] as string;
-                }
-              }
-            }
-          }
-        } else {
-          if (!hiveClientParameters[key]) {
-            hiveClientParameters[key] = environmentParameters[key];
-          }
-        }
-      }
-      }
-      return hiveClientParameters;
-    }
+    // private static resolveDefaultParameters(
+    //   hiveClientParameters?: HiveClientParameters
+    // ): HiveClientParameters {
+    //   HiveClient.LOG.trace('resolveDefaultParameters');
+    //   if (!hiveClientParameters) return environmentParameters;
+    //   for (const defaultPropertyKey in environmentParameters) {
+    //     if (environmentParameters.hasOwnProperty(defaultPropertyKey)) {
+    //     const key = defaultPropertyKey as keyof HiveClientParameters;
+    //     if (key === 'context') {
+    //       if (!hiveClientParameters.context) {
+    //         hiveClientParameters.context = environmentParameters.context;
+    //       } else {
+    //         const appContextParameters = hiveClientParameters.context;
+    //         for (const defaultContextPropertyKey in environmentParameters.context) {
+    //           if (environmentParameters.context.hasOwnProperty(defaultContextPropertyKey)){
+    //             const contextKey = defaultContextPropertyKey as keyof AppContextParameters;
+    //             if (!appContextParameters[contextKey]) {
+    //               appContextParameters[contextKey] = environmentParameters.context[contextKey] as string;
+    //             }
+    //           }
+    //         }
+    //       }
+    //     } else {
+    //       if (!hiveClientParameters[key]) {
+    //         hiveClientParameters[key] = environmentParameters[key];
+    //       }
+    //     }
+    //   }
+    //   }
+    //   return hiveClientParameters;
+    // }
 
     // private static async buildAnonymousAppContext(
     //   appContextParameters: HiveClientParameters
