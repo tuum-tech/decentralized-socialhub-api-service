@@ -435,11 +435,11 @@ export async function getHiveClientV2(): Promise<HiveClientV2> {
         storePath: `${process.env.DID_STORE_PATH}`,
         appDID: `${process.env.TUUMVAULT_APP_DID}`,
         appMnemonics: `${process.env.TUUMVAULT_MNEMONIC}`,
-        appPhrasePass: `${process.env.TUUMVAULT_DID_PASSPRASE}`,
+        appPhrasePass: `${process.env.TUUMVAULT_DID_PASSPHRASE}`,
         userDID: `${process.env.TUUMVAULT_APP_DID}`,
         appStorePass: `${process.env.DID_STORE_PASSWORD}`,
         userMnemonics: `${process.env.TUUMVAULT_MNEMONIC}`,
-        userPhrasePass: `${process.env.TUUMVAULT_DID_PASSPRASE}`,
+        userPhrasePass: `${process.env.TUUMVAULT_DID_PASSPHRASE}`,
         userStorePass: `${process.env.DID_STORE_PASSWORD}`
       },
       hiveHost: `${process.env.TUUMVAULT_API_URL}`,
