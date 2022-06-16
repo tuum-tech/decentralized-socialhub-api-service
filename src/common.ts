@@ -19,7 +19,7 @@ import path from 'path'
 import { HiveClientParameters } from './hiveclientparameters';
 import { CacheManager, Logger } from '@tuum-tech/commons.js.tools'
 
-const templateDir = path.join(__dirname, '..', '..', 'public', 'templates')
+const templateDir = path.join(__dirname, '..', 'public', 'templates')
 const templates = new EmailTemplates({
   root: templateDir,
 })
@@ -181,6 +181,31 @@ export async function verifyCode(
   return { name, loginCred, did }
 }
 
+export async function verifyCodeV2(
+  code: string,
+  email: string,
+  phone: string
+): Promise<any | undefined> {
+  const hiveClient = await getHiveClientV2()
+  const script = {
+    name: email !== '' ? 'verify_email_code' : 'verify_phone_code',
+    params: { code, email, phone },
+  }
+
+  const response: any =
+    await hiveClient.Scripting.callScript<any>(script.name, script.params, `${process.env.TUUMVAULT_APP_DID}`, `${process.env.TUUMVAULT_APP_DID}`);
+
+  const { find_code } = response
+  const { items } = find_code
+
+  if (!items || items.length === 0) {
+    return undefined
+  }
+
+  const { loginCred, name, did } = items[0]
+  return { name, loginCred, did }
+}
+
 export async function isRegisteredInVault(email: string): Promise<boolean> {
   const hiveClient = await getNonAnonymousClient()
 
@@ -212,6 +237,8 @@ export async function sendMail(
   html: string,
   attachments?: any
 ) {
+
+  LOG.info("sending email");
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_SMTP_SERVER,
     port: process.env.EMAIL_SMTP_PORT as any,
@@ -227,18 +254,21 @@ export async function sendMail(
       process.env.EMAIL_SMTP_TLS.toLowerCase() === 'false' ? false : true,
   })
 
-  // send mail with defined transport object
-  const info = await transporter.sendMail({
-    from, // sender address
-    to, // list of receivers
-    subject, // Subject line
-    text, // plain text body
-    html, // html body
-    attachments,
-  })
 
-  // tslint:disable-next-line:no-console
-  console.log(JSON.stringify(info))
+  try {
+
+    const info = await transporter.sendMail({
+      from, // sender address
+      to, // list of receivers
+      subject, // Subject line
+      text, // plain text body
+      html, // html body
+      attachments,
+    });
+    LOG.info("email info: " + JSON.stringify(info));
+  } catch(e){
+    LOG.error(`Error sending email: ${JSON.stringify(e)}`)
+  }
 }
 
 export async function sendSMSCode(to: string, code: string) {
@@ -266,6 +296,8 @@ export async function sendCreateUserVerification(
   phone: string,
   code: string
 ) {
+
+  LOG.info("sendCreateUserVerification");
   if (phone && phone !== '') {
     await sendSMSCode(phone, code)
   } else {
@@ -423,6 +455,125 @@ export async function registerVerifyAttempt(
   // tslint:disable-next-line:no-console
   console.log(JSON.stringify(inserted_id))
   return inserted_id !== undefined
+}
+
+export async function registerVerifyAttemptV2(
+  name: string,
+  email: string,
+  phone: string,
+  code: string,
+  did: string
+): Promise<boolean> {
+  const hiveClient = await getHiveClientV2()
+  const loginCred = {}
+  if (phone && phone !== '') {
+    ;(loginCred as any).phone = phone
+  }
+  if (email && email !== '') {
+    ;(loginCred as any).email = email
+  }
+  const script = {
+    name: 'add_user',
+    params: {
+      name,
+      did,
+      loginCred,
+      status: 'WAITING_CONFIRMATION',
+      code,
+      accountType: '',
+      passhash: '',
+      didPublishTime: 0,
+      pageTemplate: '',
+      badges: {
+        account: {
+          beginnerTutorial: {
+            archived: false,
+          },
+          basicProfile: {
+            archived: false,
+          },
+          educationProfile: {
+            archived: false,
+          },
+          experienceProfile: {
+            archived: false,
+          },
+        },
+        socialVerify: {
+          linkedin: {
+            archived: false,
+          },
+          facebook: {
+            archived: false,
+          },
+          twitter: {
+            archived: false,
+          },
+          google: {
+            archived: false,
+          },
+          github: {
+            archived: false,
+          },
+          discord: {
+            archived: false,
+          },
+          email: {
+            archived: false,
+          },
+          phone: {
+            archived: false,
+          },
+        },
+        didPublishTimes: {
+          _1times: {
+            archived: false,
+          },
+          _5times: {
+            archived: false,
+          },
+          _10times: {
+            archived: false,
+          },
+          _25times: {
+            archived: false,
+          },
+          _50times: {
+            archived: false,
+          },
+          _100times: {
+            archived: false,
+          },
+        },
+        dStorage: {
+          ownVault: {
+            archived: false,
+          },
+        },
+      },
+      userToken: '',
+      isDIDPublished: '',
+      isEssentialUser: false,
+      onBoardingCompleted: '',
+      tutorialStep: '',
+      hiveHost: '',
+      avatar: '',
+      timestamp: Date.now(),
+      referrals: [] as any[],
+      wallets: {}
+    },
+  }
+
+  const response: any =
+    await hiveClient.Scripting.callScript<any>(script.name, script.params, `${process.env.TUUMVAULT_APP_DID}`, `${process.env.TUUMVAULT_APP_DID}`);
+
+  LOG.info(JSON.stringify(response));
+
+  const { add_user } = response;
+  const { inserted_id } = add_user;
+
+  LOG.debug(JSON.stringify(inserted_id));
+  return (inserted_id !== undefined);
 }
 
 export async function getHiveClientV2(): Promise<HiveClientV2> {

@@ -19,19 +19,23 @@ import {
   returnError,
   returnSuccess,
   sendCreateUserVerification,
+  registerVerifyAttemptV2,
+  verifyCodeV2,
 } from "./common";
 import crypto from "crypto";
 import { initializeGlobalData } from './global_data'
 import { scheduleProfileStatsCalculation } from './scheduler/profile_stats'
 import { scheduleNFTCollectionAssetsUpdate } from './scheduler/nft_collection'
 import { DefaultDIDAdapter, DIDBackend } from '@elastosfoundation/did-js-sdk'
-// import path from 'path';
+import { Logger } from "@tuum-tech/commons.js.tools";
 
 dotenv.config()
 
 const app = express()
 
 const port = process.env.SERVER_PORT || 8080
+
+const LOG = new Logger('index');
 
 app.use(express.json({ limit: '32mb' }))
 app.use(
@@ -105,6 +109,34 @@ app.post('/v1/credential/create', async (req, res) => {
   }
 })
 
+app.post('/v2/credential/create', async (req, res) => {
+
+  LOG.info("Executing /v2/credential/create");
+
+
+  const { name, email, did } = req.body
+  const code = crypto.randomBytes(3).toString('hex').toUpperCase()
+
+  const registerSuccess = await registerVerifyAttemptV2(
+    name,
+    email,
+    '',
+    code,
+    did
+  );
+  LOG.info("register success " + registerSuccess);
+  // send email if success
+  if (registerSuccess === true) {
+
+    await sendCreateUserVerification(email, '', code)
+    returnSuccess(res, { return_code: 'WAITING_CONFIRMATION' })
+  } else {
+    returnError(res, {})
+  }
+})
+
+
+
 app.post('/v1/credential/update', async (req, res) => {
   // tslint:disable-next-line:no-console
   console.log('Executing: /credential/update')
@@ -135,6 +167,31 @@ app.post('/v1/credential/verify', async (req, res) => {
   let result
   try {
     result = await verifyCode(code, email, phone)
+  } catch (e) {
+    result = undefined
+  }
+
+  if (result && result.name) {
+    returnSuccess(res, {
+      return_code: 'CONFIRMED',
+      email: result.loginCred.email || '',
+      phone: result.phone || '',
+      name: result.name,
+      did: result.did,
+    })
+  } else {
+    returnSuccess(res, { return_code: 'CODE_INVALID' })
+  }
+})
+
+app.post('/v2/credential/verify', async (req, res) => {
+  LOG.info("Executing /v2/credential/verify");
+
+  const { code, phone, email } = req.body
+
+  let result
+  try {
+    result = await verifyCodeV2(code, email, phone)
   } catch (e) {
     result = undefined
   }
