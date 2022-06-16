@@ -6,42 +6,6 @@ import { Logger, CacheManager } from '@tuum-tech/commons.js.tools';
 import { HiveClientParameters } from "./hiveclientparameters";
 
 
-
-
-  // const environmentParameters: HiveClientParameters = {
-  //   hiveHost: process.env.REACT_APP_HIVE_HOST as string,
-  //   resolverUrl: process.env.REACT_APP_HIVE_RESOLVER_URL as string,
-  //   resolverCache: process.env.REACT_APP_HIVE_CACHE_DIR as string,
-  //   context: {
-  //     storePath: process.env.REACT_APP_APPLICATION_STORE_PATH,
-  //     appDID: process.env.REACT_APP_APPLICATION_DID,
-  //     appMnemonics: process.env.REACT_APP_APPLICATION_MNEMONICS,
-  //     appPhrasePass: process.env.REACT_APP_APPLICATION_PASSPHRASE,
-  //     appStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS,
-  //     userDID: '',
-  //     userMnemonics: '', // 'web text team glue winner violin zebra case long alert share afford',
-  //     userPhrasePass: '',
-  //     userStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS
-  //   } as AppContextParameters
-  // };
-
-  export const appParameters: HiveClientParameters = {
-    hiveHost: process.env.REACT_APP_HIVE_HOST as string,
-    resolverUrl: process.env.REACT_APP_HIVE_RESOLVER_URL as string,
-    resolverCache: process.env.REACT_APP_HIVE_CACHE_DIR as string,
-    context: {
-      storePath: process.env.REACT_APP_APPLICATION_STORE_PATH,
-      appDID: process.env.REACT_APP_APPLICATION_DID,
-      appMnemonics: process.env.REACT_APP_APPLICATION_MNEMONICS,
-      appPhrasePass: process.env.REACT_APP_APPLICATION_PASSPHRASE,
-      appStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS,
-      userDID: process.env.REACT_APP_APPLICATION_DID,
-      userMnemonics: process.env.REACT_APP_APPLICATION_MNEMONICS,
-      userPhrasePass: process.env.REACT_APP_APPLICATION_PASSPHRASE,
-      userStorePass: process.env.REACT_APP_APPLICATION_STORE_PASS
-    } as AppContextParameters
-  };
-
   export class HiveClient {
     private static APP_INSTANCE_DOCUMENT_CACHE_KEY = 'APP_INSTANCE_DOCUMENT';
     private static LOG = new Logger('HiveClient');
@@ -112,54 +76,6 @@ import { HiveClientParameters } from "./hiveclientparameters";
       return this.anonymous;
     }
 
-    // public static async createAnonymousInstance(
-    //   hiveHost: string
-    // ): Promise<HiveClient> {
-    //   HiveClient.LOG.trace('createAnonymousInstance');
-    //   let hiveClient: HiveClient = CacheManager.get('HiveClient', hiveHost);
-
-    //   if (!hiveClient) {
-    //     HiveClient.LOG.debug('Creating new anonymous HiveClient instance...');
-    //     let appContextParameters = environmentParameters;
-    //     appContextParameters.hiveHost = hiveHost;
-    //     let instanceAppContextParameters = HiveClient.resolveDefaultParameters(
-    //       appContextParameters
-    //     );
-    //     HiveClient.LOG.debug(
-    //       'Initializing anonymous resolver with {} and {} ...',
-    //       instanceAppContextParameters.resolverUrl,
-    //       instanceAppContextParameters.resolverCache
-    //     );
-    //     try {
-    //       AppContext.setupResolver(
-    //         instanceAppContextParameters.resolverUrl,
-    //         instanceAppContextParameters.resolverCache
-    //       );
-    //     } catch (e) {
-    //       if (!(e instanceof DIDResolverAlreadySetupException)) {
-    //         throw e;
-    //       }
-    //     }
-    //     HiveClient.LOG.debug(
-    //       'Building anonymous Hive context with {} ...',
-    //       JSON.stringify(instanceAppContextParameters)
-    //     );
-    //     let appContext = await HiveClient.buildAnonymousAppContext(
-    //       instanceAppContextParameters
-    //     );
-    //     hiveClient = new HiveClient(
-    //       true,
-    //       appContext,
-    //       instanceAppContextParameters,
-    //       new VaultServices(appContext, instanceAppContextParameters.hiveHost)
-    //     );
-    //     HiveClient.LOG.debug('New anonymous HiveClient created.');
-    //     hiveClient.setAnonymousScriptingService(hiveHost);
-    //     CacheManager.set('HiveClient', hiveHost, hiveClient);
-    //   }
-    //   return hiveClient;
-    // }
-
     public static async createInstance(
       appContextParameters?: HiveClientParameters
     ): Promise<HiveClient> {
@@ -207,21 +123,15 @@ import { HiveClientParameters } from "./hiveclientparameters";
       return hiveClient;
     }
 
-    public static async getHiveVersion(hiveHost: string): Promise<string> {
+    public async getHiveVersion(): Promise<string> {
       HiveClient.LOG.trace('getHiveVersion');
 
-      const params = appParameters;
-      params.hiveHost = hiveHost;
-      const hiveClient = await HiveClient.createInstance(params);
-
       const serviceEndpoint = new ServiceEndpoint(
-        hiveClient.appContext,
-        hiveClient.hiveClientParameters.hiveHost
+        this.appContext,
+        this.hiveClientParameters.hiveHost
       );
 
       return (await serviceEndpoint.getNodeVersion()).toString();
-      // TODO: fix sdk endpoint
-      // return '2.7.2';
     }
 
     // private static resolveDefaultParameters(
@@ -256,7 +166,7 @@ import { HiveClientParameters } from "./hiveclientparameters";
     //   return hiveClientParameters;
     // }
 
-   
+
     private static async buildAppContext(
       appContextParameters: HiveClientParameters
     ): Promise<AppContext> {

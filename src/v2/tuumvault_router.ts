@@ -54,6 +54,23 @@ tuumvaultRouter.post('/setup', async (req, res) => {
   res.send(ret);
 });
 
+tuumvaultRouter.post('/version', async (req, res) => {
+
+  LOG.info("Executing: /v2/version");
+
+  let ret = "";
+  try {
+    const client = await getHiveClientV2();
+    ret = await client.getHiveVersion();
+
+  } catch (e) {
+    LOG.error("Error getting version: " + e);
+    res.send(e);
+  }
+
+  res.send(ret);
+});
+
 
 tuumvaultRouter.post('/scripting/set_script', async (req, res) => {
   const hiveClient = await getHiveClient()
