@@ -5,7 +5,6 @@ import {
   IRunScriptResponse,
 } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
 import { returnSuccess, getHiveClient, returnError } from "./common";
-import { getAssetsUsingElacityAPI } from "../scheduler/nft_collection";
 
 const NFTCollectionRouter = express.Router();
 
@@ -141,12 +140,50 @@ NFTCollectionRouter.get('/ethaddress', async (req, res) => {
   }
 });
 
-// TODO
 NFTCollectionRouter.get('/escaddress', async (req, res) => {
   try {
     const address = req.query.address as string;
-    const data = await getAssetsUsingElacityAPI(address, '');
-    returnSuccess(res, data);
+    const page: number = +req.query.page;
+    const count = 9;
+    const elacityAPIUrl = 'https://ela.city/api/nftitems/fetchTokens'
+    const result = await fetch(elacityAPIUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: "single",
+        sortby: "createdAt$desc",
+        filterby: [],
+        address,
+        from: page * count,
+        count
+      }),
+    })
+    const { status, statusText } = result
+    let assets = []
+    const data = await result.json()
+    if (status === 200 && statusText === 'OK') {
+      if (data.status === 'success') {
+        assets = data.data.tokens.map((asset: any) => ({
+          ...asset,
+          name: asset.name,
+          image_url: asset.imageURL,
+          owner: asset.owner?.address,
+          last_sale: asset.price
+            ? {
+              price: asset.price,
+              token: 'ELA',
+            }
+            : null,
+        }))
+      }
+    }
+    returnSuccess(res, {
+      assets,
+      total: data.data.total,
+      totalPage: Math.ceil(data.data.total / 9)
+    });
   } catch (err) {
     // tslint:disable-next-line:no-console
     console.info('nft escaddress error===>', err);
