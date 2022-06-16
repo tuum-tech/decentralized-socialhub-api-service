@@ -94,8 +94,9 @@ NFTCollectionRouter.get("/owners", async (req, res) => {
 
 NFTCollectionRouter.get('/ethaddress', async (req, res) => {
   try {
+    const count = 9;
     const address = req.query.address as string;
-    const moralisAPIUrl = `https://deep-index.moralis.io/api/v2/${address}/nft?format=decimal&cursor=${req.query.cursor}&limit=9`
+    const moralisAPIUrl = `https://deep-index.moralis.io/api/v2/${address}/nft?format=decimal&cursor=${req.query.cursor}&limit=${count}`
     const result = await fetch(moralisAPIUrl, {
       method: 'GET',
       headers: {
