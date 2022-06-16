@@ -3,7 +3,7 @@ import cron from 'node-cron'
 import BigNumber from 'bignumber.js'
 import { getHiveClient } from '../v1/common'
 
-export const getAssetsUsingElacityAPI = async (address: string, slug: string) => {
+const getAssetsUsingElacityAPI = async (address: string, slug: string) => {
   const elacityAPIUrl = 'https://ela.city/api/nftitems/fetchTokens'
   const result = await fetch(elacityAPIUrl, {
     method: 'POST',
