@@ -2,7 +2,7 @@ import {
   IRunScriptResponse,
   IRunScriptData,
 } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
-import { getHiveClient } from './v1/common'
+import { getHiveClient } from './common'
 
 declare global {
   namespace NodeJS {

@@ -3,7 +3,7 @@ import {
   IRunScriptResponse,
 } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
 import cron from 'node-cron'
-import { getHiveClient, getNonAnonymousClient } from '../v1/common'
+import { getHiveClient } from '../common'
 import { globalData } from '../global_data'
 
 export function scheduleProfileStatsCalculation() {
