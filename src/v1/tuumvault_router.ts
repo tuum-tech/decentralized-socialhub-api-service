@@ -87,17 +87,22 @@ tuumvaultRouter.get('/get_new_users_by_date/:created', async (req, res) => {
     }
 
     const hiveClient = await getHiveClient()
+    const countResponse = hiveClient.Database.countDocuments(
+      'users',
+      {},
+      undefined
+    )
     const response: IRunScriptResponse<any> =
       await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
 
-    const users = response.response.get_all_users.items.filter(
-      (item: any) =>
-        item.created.$date >= startDate && item.created.$date < endDate
-    )
     if (created !== 'all') {
+      const users = response.response.get_all_users.items.filter(
+        (item: any) =>
+          item.created.$date >= startDate && item.created.$date < endDate
+      )
       result.users = users
     }
-    result.count = users.length
+    result.count = (await countResponse).count
   } catch (err: any) {
     // tslint:disable-next-line:no-console
     console.info('Error while getting new users for a specific date: ', err)
