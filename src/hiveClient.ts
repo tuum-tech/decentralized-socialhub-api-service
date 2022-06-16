@@ -256,52 +256,7 @@ import { HiveClientParameters } from "./hiveclientparameters";
     //   return hiveClientParameters;
     // }
 
-    // private static async buildAnonymousAppContext(
-    //   appContextParameters: HiveClientParameters
-    // ): Promise<AppContext> {
-    //   HiveClient.LOG.trace('buildAnonymousAppContext');
-    //   return await AppContext.build(
-    //     {
-    //       getLocalDataDir(): string {
-    //         HiveClient.LOG.trace('HiveAnonymousContextProvider: getLocalDataDir');
-    //         return appContextParameters.context.storePath;
-    //       },
-
-    //       /**
-    //        * The method for upper Application to implement to provide current application
-    //        * instance did document as the running context.
-    //        * @return The application instance did document.
-    //        */
-    //       async getAppInstanceDocument(): Promise<DIDDocument> {
-    //         HiveClient.LOG.trace(
-    //           'HiveAnonymousContextProvider: getAppInstanceDocument'
-    //         );
-    //         return new Promise((resolve, reject) => {
-    //           resolve(new DIDDocument());
-    //         });
-    //       },
-
-    //       /**
-    //        * The method for upper Application to implement to acquire the authorization
-    //        * code from user's approval.
-    //        * @param authenticationChallengeJWtCode  The input challenge code from back-end node service.
-    //        * @return The credential issued by user.
-    //        */
-    //       getAuthorization(
-    //         authenticationChallengeJWtCode: string
-    //       ): Promise<string> {
-    //         HiveClient.LOG.trace(
-    //           'HiveAnonymousContextProvider: getAuthorization'
-    //         );
-    //         return new Promise((resolve, reject) => {
-    //           resolve('');
-    //         });
-    //       }
-    //     },
-    //     appContextParameters.context.userDID as string
-    //   );
-    // }
-
+   
     private static async buildAppContext(
       appContextParameters: HiveClientParameters
     ): Promise<AppContext> {

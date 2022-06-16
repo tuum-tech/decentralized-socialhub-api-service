@@ -67,11 +67,10 @@ tuumvaultRouter.post('/scripting/run_script', async (req, res) => {
   // tslint:disable-next-line:no-console
   console.info('Executing: /v1/scripting/run_script')
 
-  const hiveClient = await getHiveClient()
-  const response: IRunScriptResponse<any> =
-    await hiveClient.Scripting.RunScript<any>(req.body as IRunScriptData)
+  const hiveClient = await getHiveClientV2()
+  const response = await hiveClient.Scripting.callScript(req.body.name, req.body.params, req.body.context.target_did, req.body.context.target_app_did);
 
-  returnSuccess(res, response.response)
+  returnSuccess(res, response)
 })
 
 tuumvaultRouter.post(
@@ -218,7 +217,9 @@ tuumvaultRouter.get('/get_users_with_nontuumvaults', async (req, res) => {
 
 tuumvaultRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
   // tslint:disable-next-line:no-console
-  console.info('Executing: /v1/get_new_spaces_by_date')
+  console.info('Executing: /v2/get_new_spaces_by_date')
+
+
 
   const script = {
     name: 'get_all_spaces',
@@ -246,9 +247,9 @@ tuumvaultRouter.get('/get_new_spaces_by_date/:created', async (req, res) => {
       delete result.users
     }
 
-    const hiveClient = await getHiveClient()
-    const response: IRunScriptResponse<any> =
-      await hiveClient.Scripting.RunScript<any>(script as IRunScriptData)
+    const hiveClient = await getHiveClientV2()
+    const response: any =
+      await hiveClient.Scripting.callScript<any>(script.name, {}, script.context.target_did, script.context.target_app_did);
 
     const users = response.response.get_all_spaces.items.filter(
       (item: any) =>
