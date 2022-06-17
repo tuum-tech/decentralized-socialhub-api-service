@@ -28,9 +28,9 @@ const getAssetsUsingElacityAPI = async (address: string, slug: string) => {
         owner: asset.owner?.address,
         last_sale: asset.price
           ? {
-              price: asset.price,
-              token: 'ELA',
-            }
+            price: asset.price,
+            token: 'ELA',
+          }
           : null,
       }))
     }
@@ -123,13 +123,13 @@ const getAssetsUsingOpenseaAPI = async (slug: string) => {
                 owner.address === zeroAddress ? creator.address : owner.address,
               last_sale: last_sale
                 ? {
-                    token: last_sale.payment_token.symbol,
-                    price: new BigNumber(last_sale.total_price)
-                      .dividedBy(
-                        new BigNumber(10).pow(last_sale.payment_token.decimals)
-                      )
-                      .toNumber(),
-                  }
+                  token: last_sale.payment_token.symbol,
+                  price: new BigNumber(last_sale.total_price)
+                    .dividedBy(
+                      new BigNumber(10).pow(last_sale.payment_token.decimals)
+                    )
+                    .toNumber(),
+                }
                 : null,
             }
           })
