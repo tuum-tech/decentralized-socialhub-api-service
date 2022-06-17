@@ -1,7 +1,7 @@
-import { IRunScriptResponse } from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
-import cron from 'node-cron'
-import BigNumber from 'bignumber.js'
-import { getHiveClient } from '../v1/common'
+import { IRunScriptResponse } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
+import cron from "node-cron";
+import BigNumber from "bignumber.js";
+import { getHiveClient } from "../common";
 
 const getAssetsUsingElacityAPI = async (address: string, slug: string) => {
   const elacityAPIUrl = 'https://ela.city/api/nftitems/fetchTokens'

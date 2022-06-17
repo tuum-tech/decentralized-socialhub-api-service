@@ -1,5 +1,5 @@
 import express from 'express'
-import { returnSuccess, sendMail } from './common'
+import { returnSuccess, sendMail } from '../common'
 
 const supportRouter = express.Router()
 

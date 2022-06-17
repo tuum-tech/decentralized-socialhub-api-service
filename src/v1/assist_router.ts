@@ -2,7 +2,7 @@ import express, { request } from 'express'
 import bodyParser from 'body-parser'
 import { ElastosClient } from '@elastosfoundation/elastos-js-sdk'
 import jwt_decode from 'jwt-decode'
-import { handleRoute, returnSuccess } from './common'
+import { handleRoute, returnSuccess } from '../common'
 
 const assistRouter = express.Router()
 

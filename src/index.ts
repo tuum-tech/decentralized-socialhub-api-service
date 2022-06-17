@@ -1,15 +1,16 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import fetch from 'node-fetch'
-import tuumvaultRouter from './v1/tuumvault_router'
-import supportRouter from './v1/support_router'
-import NFTCollectionRouter from './v1/nft_collection_router'
-import assistRouter from './v1/assist_router'
-import testRouter from './v1/test'
-import auth from './v1/auth'
-import cors from 'cors'
-import didcredsRouter from './v1/didcreds_router'
-import publicStatsRouter from './public_stats_router'
+import express from "express";
+import dotenv from "dotenv";
+import fetch from "node-fetch";
+import tuumvaultRouter from "./v1/tuumvault_router";
+import tuumvaultRouterV2 from "./v2/tuumvault_router";
+import supportRouter from "./v1/support_router";
+import NFTCollectionRouter from "./v1/nft_collection_router";
+import assistRouter from "./v1/assist_router";
+import testRouter from "./v1/test";
+import auth from "./v1/auth";
+import cors from "cors";
+import didcredsRouter from "./v1/didcreds_router";
+import publicStatsRouter from "./public_stats_router";
 import {
   getHiveClient,
   verifyCode,
@@ -18,19 +19,23 @@ import {
   returnError,
   returnSuccess,
   sendCreateUserVerification,
-} from './v1/common'
-import crypto from 'crypto'
+  registerVerifyAttemptV2,
+  verifyCodeV2,
+} from "./common";
+import crypto from "crypto";
 import { initializeGlobalData } from './global_data'
 import { scheduleProfileStatsCalculation } from './scheduler/profile_stats'
 import { scheduleNFTCollectionAssetsUpdate } from './scheduler/nft_collection'
 import { DefaultDIDAdapter, DIDBackend } from '@elastosfoundation/did-js-sdk'
-// import path from 'path';
+import { Logger } from "@tuum-tech/commons.js.tools";
 
 dotenv.config()
 
 const app = express()
 
 const port = process.env.SERVER_PORT || 8080
+
+const LOG = new Logger('index');
 
 app.use(express.json({ limit: '32mb' }))
 app.use(
@@ -76,6 +81,8 @@ app.use('/v1/nft_collection_router', NFTCollectionRouter)
 app.use('/public_stats_router', publicStatsRouter)
 app.use('/v1/test', testRouter)
 
+app.use("/v2/tuumvault_router", tuumvaultRouterV2);
+
 // app.use(express.static(path.join(__dirname, '..', 'public', 'templates')));
 
 app.post('/v1/credential/create', async (req, res) => {
@@ -101,6 +108,34 @@ app.post('/v1/credential/create', async (req, res) => {
     returnError(res, {})
   }
 })
+
+app.post('/v2/credential/create', async (req, res) => {
+
+  LOG.info("Executing /v2/credential/create");
+
+
+  const { name, email, did } = req.body
+  const code = crypto.randomBytes(3).toString('hex').toUpperCase()
+
+  const registerSuccess = await registerVerifyAttemptV2(
+    name,
+    email,
+    '',
+    code,
+    did
+  );
+  LOG.info("register success " + registerSuccess);
+  // send email if success
+  if (registerSuccess === true) {
+
+    await sendCreateUserVerification(email, '', code)
+    returnSuccess(res, { return_code: 'WAITING_CONFIRMATION' })
+  } else {
+    returnError(res, {})
+  }
+})
+
+
 
 app.post('/v1/credential/update', async (req, res) => {
   // tslint:disable-next-line:no-console
@@ -132,6 +167,31 @@ app.post('/v1/credential/verify', async (req, res) => {
   let result
   try {
     result = await verifyCode(code, email, phone)
+  } catch (e) {
+    result = undefined
+  }
+
+  if (result && result.name) {
+    returnSuccess(res, {
+      return_code: 'CONFIRMED',
+      email: result.loginCred.email || '',
+      phone: result.phone || '',
+      name: result.name,
+      did: result.did,
+    })
+  } else {
+    returnSuccess(res, { return_code: 'CODE_INVALID' })
+  }
+})
+
+app.post('/v2/credential/verify', async (req, res) => {
+  LOG.info("Executing /v2/credential/verify");
+
+  const { code, phone, email } = req.body
+
+  let result
+  try {
+    result = await verifyCodeV2(code, email, phone)
   } catch (e) {
     result = undefined
   }

@@ -4,7 +4,7 @@ import {
   IRunScriptData,
   IRunScriptResponse,
 } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
-import { returnSuccess, getHiveClient, returnError } from "./common";
+import { returnSuccess, getHiveClient, returnError } from "../common";
 
 const NFTCollectionRouter = express.Router();
 

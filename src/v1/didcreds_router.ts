@@ -1,5 +1,5 @@
 import express from 'express'
-import { handleRoute, returnSuccess } from './common'
+import { handleRoute, returnSuccess } from '../common'
 import {
   DID,
   DIDStore,
