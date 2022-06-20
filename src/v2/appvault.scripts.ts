@@ -14,6 +14,18 @@ const LOG = new Logger("appvault.scripts");
 
 export class AppVaultScripts {
 
+
+  public async tryUnregisterScript(hiveClient: HiveClient, scriptName: string){
+    try {
+      LOG.info(`Updating script ${scriptName}`);
+      await hiveClient.Scripting.unregisterScript(scriptName);
+    } catch(e){
+      LOG.debug(`Cannot unregister ${scriptName} because it doesn't exist`);
+    }
+  }
+
+
+
     public async setupAssets(hiveClient: HiveClient) {
 
       try {
@@ -22,7 +34,7 @@ export class AppVaultScripts {
         LOG.info("creating collection failed");
       }
 
-      await hiveClient.Scripting.unregisterScript('update_nft_collection_assets');
+      await this.tryUnregisterScript(hiveClient, "update_nft_collection_assets");
       await hiveClient.Scripting.registerScript(
         'update_nft_collection_assets',
         new UpdateExecutable(
@@ -47,7 +59,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_nft_collection_assets');
+      await this.tryUnregisterScript(hiveClient, "get_nft_collection_assets");
       await hiveClient.Scripting.registerScript(
         'get_nft_collection_assets',
         new FindExecutable(
@@ -64,7 +76,8 @@ export class AppVaultScripts {
       );
     }
 
-    public async setupCommunitySpaces(hiveClient: HiveClient) {
+
+       public async setupCommunitySpaces(hiveClient: HiveClient) {
 
       try {
           await hiveClient.Database.createCollection('community_spaces');
@@ -73,8 +86,8 @@ export class AppVaultScripts {
           LOG.info("creating collection failed");
       }
 
-      LOG.info("Updating script get_nft_collection_spaces");
-      await hiveClient.Scripting.unregisterScript("get_nft_collection_spaces");
+
+      await this.tryUnregisterScript(hiveClient, "get_nft_collection_spaces");
       await hiveClient.Scripting.registerScript(
         'get_nft_collection_spaces',
         new FindExecutable(
@@ -90,7 +103,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript("get_community_spaces");
+      await this.tryUnregisterScript(hiveClient, "get_community_spaces");
       await hiveClient.Scripting.registerScript(
         'get_community_spaces',
         new FindExecutable(
@@ -104,7 +117,8 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript("get_community_space_by_names");
+
+      await this.tryUnregisterScript(hiveClient, "get_community_space_by_names");
       await hiveClient.Scripting.registerScript(
         'get_community_space_by_names',
         new FindExecutable(
@@ -121,7 +135,7 @@ export class AppVaultScripts {
       );
 
 
-      await hiveClient.Scripting.unregisterScript("get_community_space_by_ids");
+      await this.tryUnregisterScript(hiveClient, "get_community_space_by_ids");
       await hiveClient.Scripting.registerScript(
         'get_community_space_by_ids',
         new FindExecutable(
@@ -137,7 +151,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript("add_community_space");
+      await this.tryUnregisterScript(hiveClient, "add_community_space");
       await hiveClient.Scripting.registerScript(
         'add_community_space',
         new UpdateExecutable(
@@ -172,7 +186,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript("follow_community_space");
+      await this.tryUnregisterScript(hiveClient, "follow_community_space");
       await hiveClient.Scripting.registerScript(
         'follow_community_space',
         new UpdateExecutable(
@@ -204,7 +218,7 @@ export class AppVaultScripts {
           LOG.info("creating spaces collection failed");
       }
 
-      await hiveClient.Scripting.unregisterScript('get_all_spaces');
+      await this.tryUnregisterScript(hiveClient, "get_all_spaces");
       await hiveClient.Scripting.registerScript(
         'get_all_spaces',
         new FindExecutable('get_all_spaces', 'spaces', null, null).setOutput(
@@ -215,7 +229,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_space_by_ids');
+      await this.tryUnregisterScript(hiveClient, "get_space_by_ids");
       await hiveClient.Scripting.registerScript(
         'get_space_by_ids',
         new FindExecutable(
@@ -231,7 +245,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_space_by_owner');
+      await this.tryUnregisterScript(hiveClient, "get_space_by_owner");
       await hiveClient.Scripting.registerScript(
         'get_space_by_owner',
         new FindExecutable(
@@ -247,7 +261,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('add_space');
+      await this.tryUnregisterScript(hiveClient, "add_space");
       await hiveClient.Scripting.registerScript(
         'add_space',
         new UpdateExecutable(
@@ -270,7 +284,7 @@ export class AppVaultScripts {
         )
       );
 
-      await hiveClient.Scripting.unregisterScript('remove_space');
+      await this.tryUnregisterScript(hiveClient, "remove_space");
       await hiveClient.Scripting.registerScript(
         'remove_space',
         new DeleteExecutable('remove_space', 'spaces', {
@@ -281,7 +295,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('follow_space');
+      await this.tryUnregisterScript(hiveClient, "follow_space");
       await hiveClient.Scripting.registerScript(
         'follow_space',
         new UpdateExecutable(
@@ -313,7 +327,7 @@ export class AppVaultScripts {
         LOG.info("creating spaces collection failed");
       }
 
-      await hiveClient.Scripting.unregisterScript('add_comment');
+      await this.tryUnregisterScript(hiveClient, "add_comment");
       await hiveClient.Scripting.registerScript(
         'add_comment',
         new InsertExecutable(
@@ -335,7 +349,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_comments_by_github_issue_id');
+      await this.tryUnregisterScript(hiveClient, "get_comments_by_github_issue_id");
       await hiveClient.Scripting.registerScript(
         'get_comments_by_github_issue_id',
         new FindExecutable(
@@ -362,7 +376,7 @@ export class AppVaultScripts {
         LOG.info("creating followers collection failed");
       }
 
-      await hiveClient.Scripting.unregisterScript('set_followers');
+      await this.tryUnregisterScript(hiveClient, "get_comments_by_github_issue_id");
       await hiveClient.Scripting.registerScript(
         'set_followers',
         new UpdateExecutable(
@@ -387,7 +401,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_followers');
+      await this.tryUnregisterScript(hiveClient, "get_followers");
       await hiveClient.Scripting.registerScript(
         'get_followers',
         new FindExecutable(
@@ -416,7 +430,7 @@ export class AppVaultScripts {
         LOG.info("creating verifications collection failed");
       }
 
-      await hiveClient.Scripting.unregisterScript('add_verification');
+      await this.tryUnregisterScript(hiveClient, "add_verification");
       await hiveClient.Scripting.registerScript(
         'add_verification',
         new InsertExecutable(
@@ -443,7 +457,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('update_verification');
+      await this.tryUnregisterScript(hiveClient, "update_verification");
       await hiveClient.Scripting.registerScript(
         'update_verification',
         new UpdateExecutable(
@@ -469,7 +483,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_requests_to_me');
+      await this.tryUnregisterScript(hiveClient, "get_requests_to_me");
       await hiveClient.Scripting.registerScript(
         'get_requests_to_me',
         new FindExecutable(
@@ -488,7 +502,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_requests_by_me');
+      await this.tryUnregisterScript(hiveClient, "get_requests_by_me");
       await hiveClient.Scripting.registerScript(
         'get_requests_by_me',
         new FindExecutable(
@@ -507,7 +521,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_my_verified_credentials');
+      await this.tryUnregisterScript(hiveClient, "get_my_verified_credentials");
       await hiveClient.Scripting.registerScript(
         'get_my_verified_credentials',
         new FindExecutable(
@@ -535,7 +549,7 @@ export class AppVaultScripts {
         LOG.info("creating users collection failed");
       }
 
-      await hiveClient.Scripting.unregisterScript('add_user');
+      await this.tryUnregisterScript(hiveClient, "add_user");
       await hiveClient.Scripting.registerScript(
         'add_user',
         new InsertExecutable(
@@ -571,7 +585,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('update_user');
+      await this.tryUnregisterScript(hiveClient, "update_user");
       await hiveClient.Scripting.registerScript(
         'update_user',
         new UpdateExecutable(
@@ -612,7 +626,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('update_email_user');
+      await this.tryUnregisterScript(hiveClient, "update_email_user");
       await hiveClient.Scripting.registerScript(
         'update_email_user',
         new UpdateExecutable(
@@ -648,8 +662,7 @@ export class AppVaultScripts {
         true
       );
 
-      // update verify user, called when user request update email
-      await hiveClient.Scripting.unregisterScript('update_verify_user');
+      await this.tryUnregisterScript(hiveClient, "update_verify_user");
       await hiveClient.Scripting.registerScript(
         'update_verify_user',
         new UpdateExecutable(
@@ -674,7 +687,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('delete_users');
+      await this.tryUnregisterScript(hiveClient, "delete_users");
       await hiveClient.Scripting.registerScript(
         'delete_users',
         new DeleteExecutable('delete_users', 'users', {
@@ -685,7 +698,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('delete_expired_users');
+      await this.tryUnregisterScript(hiveClient, "delete_expired_users");
       await hiveClient.Scripting.registerScript(
         'delete_expired_users',
         new DeleteExecutable('delete_expired_users', 'users', {
@@ -697,8 +710,7 @@ export class AppVaultScripts {
         true
       );
 
-      LOG.info("Updating script get_users_by_tutorialStep");
-      await hiveClient.Scripting.unregisterScript('get_users_by_tutorialStep');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_tutorialStep");
       await hiveClient.Scripting.registerScript(
         'get_users_by_tutorialStep',
         new FindExecutable(
@@ -717,9 +729,7 @@ export class AppVaultScripts {
         true
       );
 
-    // TODO: return to original commented script with limit and skip, still not supported in hive V2
-      LOG.info("Updating script get_users_by_tutorialStep");
-      await hiveClient.Scripting.unregisterScript('get_users_by_dids');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_dids");
       await hiveClient.Scripting.registerScript(
         'get_users_by_dids',
         new FindExecutable(
@@ -739,26 +749,7 @@ export class AppVaultScripts {
         true
       );
 
-    //   await hiveClient.Scripting.registerScript(
-    //     'get_users_by_dids',
-    //     new FindExecutable(
-    //       'get_users_by_dids',
-    //       'users',
-    //       {
-    //         did: { $in: '$params.dids' }
-    //       }
-    //       ,
-    //       {
-    //         limit: '$params.limit',
-    //         skip: '$params.skip'
-    //       }
-    //     ).setOutput(true),
-    //     undefined,
-    //     true,
-    //     true
-    //   );
-
-      await hiveClient.Scripting.unregisterScript('get_users_by_email');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_email");
       await hiveClient.Scripting.registerScript(
         'get_users_by_email',
         new FindExecutable(
@@ -774,7 +765,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_google');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_google");
       await hiveClient.Scripting.registerScript(
         'get_users_by_google',
         new FindExecutable(
@@ -790,7 +781,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_twitter');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_twitter");
       await hiveClient.Scripting.registerScript(
         'get_users_by_twitter',
         new FindExecutable(
@@ -806,7 +797,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_facebook');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_facebook");
       await hiveClient.Scripting.registerScript(
         'get_users_by_facebook',
         new FindExecutable(
@@ -822,7 +813,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_linkedin');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_linkedin");
       await hiveClient.Scripting.registerScript(
         'get_users_by_linkedin',
         new FindExecutable(
@@ -838,7 +829,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_github');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_github");
       await hiveClient.Scripting.registerScript(
         'get_users_by_github',
         new FindExecutable(
@@ -851,7 +842,7 @@ export class AppVaultScripts {
         ).setOutput(true)
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_discord');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_discord");
       await hiveClient.Scripting.registerScript(
         'get_users_by_discord',
         new FindExecutable(
@@ -867,7 +858,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('verify_email_code');
+      await this.tryUnregisterScript(hiveClient, "verify_email_code");
       await hiveClient.Scripting.registerScript(
         'verify_email_code', // is being used in backend
         new AggregatedExecutable('verify_email_code', [
@@ -899,7 +890,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('verify_phone_code');
+      await this.tryUnregisterScript(hiveClient, "verify_phone_code");
       await hiveClient.Scripting.registerScript(
         'verify_phone_code', // is being used in backend
         new AggregatedExecutable('verify_phone_code', [
@@ -931,7 +922,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_name');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_name");
       // ===== For searching on explore page =====
       await hiveClient.Scripting.registerScript(
         'get_users_by_name',
@@ -952,7 +943,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_name_and_dids');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_name_and_dids");
       await hiveClient.Scripting.registerScript(
         'get_users_by_name_and_dids',
         new FindExecutable(
@@ -972,7 +963,7 @@ export class AppVaultScripts {
         true
       );
 
-      await hiveClient.Scripting.unregisterScript('get_users_by_did');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_did");
       await hiveClient.Scripting.registerScript(
         'get_users_by_did',
         new FindExecutable(
@@ -993,7 +984,7 @@ export class AppVaultScripts {
 
       // ===== For getting Profile related stats(for daily summary stats) =====
       // Get all the new users on a specific date
-      await hiveClient.Scripting.unregisterScript('get_all_users');
+      await this.tryUnregisterScript(hiveClient, "get_all_users");
       await hiveClient.Scripting.registerScript(
         'get_all_users',
         new FindExecutable('get_all_users', 'users', null, null).setOutput(true),
@@ -1004,7 +995,7 @@ export class AppVaultScripts {
 
       // Get all the users according to their accountType. This can be used to get all
       // users who registered via Google, or DID or whatever.
-      await hiveClient.Scripting.unregisterScript('get_users_by_account_type');
+      await this.tryUnregisterScript(hiveClient, "get_users_by_account_type");
       await hiveClient.Scripting.registerScript(
         'get_users_by_account_type',
         new FindExecutable(
@@ -1021,7 +1012,7 @@ export class AppVaultScripts {
       );
 
       // This can be used to get all the users who are not using Tuum tech vault
-      await hiveClient.Scripting.unregisterScript('get_users_with_othervaultsthanyourown')
+      await this.tryUnregisterScript(hiveClient, "get_users_with_othervaultsthanyourown");
       await hiveClient.Scripting.registerScript(
         'get_users_with_othervaultsthanyourown',
         new FindExecutable(
@@ -1047,7 +1038,7 @@ export class AppVaultScripts {
       }
 
 
-      await hiveClient.Scripting.unregisterScript('add_feedback');
+      await this.tryUnregisterScript(hiveClient, "add_feedback");
       await hiveClient.Scripting.registerScript(
         'add_feedback',
         new InsertExecutable(
@@ -1069,7 +1060,6 @@ export class AppVaultScripts {
     public async Execute(hiveClient: HiveClient) {
       LOG.info("Starting execution");
 
-      LOG.info("Setup Community Spaces");
       await this.setupCommunitySpaces(hiveClient);
       await this.setupAssets(hiveClient);
       await this.setupSpaces(hiveClient);
@@ -1078,5 +1068,7 @@ export class AppVaultScripts {
       await this.setupVerifications(hiveClient);
       await this.setupUsers(hiveClient);
       await this.setupFeedbacks(hiveClient);
+
+      LOG.info("All updated succesfully");
     }
   }
