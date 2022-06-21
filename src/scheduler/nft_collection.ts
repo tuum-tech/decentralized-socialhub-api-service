@@ -2,6 +2,8 @@ import { IRunScriptResponse } from '@elastosfoundation/elastos-hive-js-sdk/dist/
 import cron from 'node-cron'
 import BigNumber from 'bignumber.js'
 import { getHiveClient } from '../v1/common'
+import { getSupportedChain, supportedChains } from '../moralis'
+import Moralis from 'moralis/node'
 
 const getAssetsUsingElacityAPI = async (address: string, slug: string) => {
   const elacityAPIUrl = 'https://ela.city/api/nftitems/fetchTokens'
@@ -28,9 +30,9 @@ const getAssetsUsingElacityAPI = async (address: string, slug: string) => {
         owner: asset.owner?.address,
         last_sale: asset.price
           ? {
-            price: asset.price,
-            token: 'ELA',
-          }
+              price: asset.price,
+              token: 'ELA',
+            }
           : null,
       }))
     }
@@ -42,50 +44,45 @@ const getAssetsUsingMoralisAPI = async (
   chain: string,
   slug: string
 ) => {
-  let cursor = ''
-  let assets: any[] = []
-  do {
-    const moralisAPIUrl = `https://deep-index.moralis.io/api/v2/nft/${address}/owners?chain=${chain}&format=decimal&cursor=${cursor}`
-    const result = await fetch(moralisAPIUrl, {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        'X-API-Key': process.env.MORALIS_API_KEY,
-      },
-    })
-    const { status, statusText } = result
+  if (supportedChains.indexOf(chain) === -1) {
     // tslint:disable-next-line:no-console
     console.log(
-      'Using Moralis API for the collection ',
-      slug,
-      status,
-      statusText
+      `${chain} is not currently supported. The valid chains are ${supportedChains}`
     )
-    if (status === 200 && statusText === 'OK') {
-      const data = await result.json()
-      cursor = data.cursor
-      assets = assets.concat(
-        data.result.map((asset: any) => {
-          if (typeof asset === 'object') {
-            const name = `${asset.name} #${asset.token_id}`
-            let imageUrl = ''
-            const metadata = JSON.parse(asset.metadata)
-            if (metadata !== null) {
-              imageUrl = metadata.image
-            }
-            return {
-              name,
-              image_url: imageUrl,
-              owner: asset.owner_of,
-              last_sale: asset.last_sale,
-            }
-          }
-        })
-      )
-    } else {
-      cursor = ''
+    return []
+  }
+
+  // get NFT owners for a given contract address
+  const options = {
+    chain: getSupportedChain(chain),
+    address,
+  }
+
+  // tslint:disable-next-line:no-console
+  console.log(`Using Moralis API for the collection '${slug}'`)
+
+  let nftOwners = await Moralis.Web3API.token.getNFTOwners(options)
+  while (nftOwners.next) {
+    nftOwners = await nftOwners.next()
+  }
+
+  const assets: any[] = nftOwners.result.map((asset: any) => {
+    if (typeof asset === 'object') {
+      const name = `${asset.name} #${asset.token_id}`
+      let imageUrl = ''
+      const metadata = JSON.parse(asset.metadata)
+      if (metadata !== null) {
+        imageUrl = metadata.image
+      }
+      return {
+        name,
+        image_url: imageUrl,
+        owner: asset.owner_of,
+        last_sale: asset.last_sale,
+      }
     }
-  } while (cursor !== '')
+  })
+
   return assets
 }
 const getAssetsUsingOpenseaAPI = async (slug: string) => {
@@ -123,13 +120,13 @@ const getAssetsUsingOpenseaAPI = async (slug: string) => {
                 owner.address === zeroAddress ? creator.address : owner.address,
               last_sale: last_sale
                 ? {
-                  token: last_sale.payment_token.symbol,
-                  price: new BigNumber(last_sale.total_price)
-                    .dividedBy(
-                      new BigNumber(10).pow(last_sale.payment_token.decimals)
-                    )
-                    .toNumber(),
-                }
+                    token: last_sale.payment_token.symbol,
+                    price: new BigNumber(last_sale.total_price)
+                      .dividedBy(
+                        new BigNumber(10).pow(last_sale.payment_token.decimals)
+                      )
+                      .toNumber(),
+                  }
                 : null,
             }
           })
@@ -178,24 +175,9 @@ export function scheduleNFTCollectionAssetsUpdate() {
             }
             // Else use Moralis API
             else {
-              let chain = ''
-              // Available values for chains: eth, 0x1, ropsten, 0x3, rinkeby, 0x4, goerli, 0x5, kovan, 0x2a
-              /// polygon, 0x89, mumbai, 0x13881, bsc, 0x38, bsc testnet, 0x61, avalance, 0xa86a, avalanche testnet
-              // 0xa869, fantom, 0xfa
-              if (network.toLowerCase() === 'ethereum') {
-                chain = 'eth'
-              } else if (network.toLowerCase() === 'polygon') {
-                chain = 'polygon'
-              } else {
-                // tslint:disable-next-line:no-console
-                console.log(
-                  `${space.name} on ${network} not currently supported`
-                )
-                return
-              }
               assets = await getAssetsUsingMoralisAPI(
                 address,
-                chain,
+                network.toLowerCase(),
                 collectionSlug
               )
             }

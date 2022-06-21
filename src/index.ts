@@ -21,6 +21,7 @@ import {
 } from './v1/common'
 import crypto from 'crypto'
 import { initializeGlobalData } from './global_data'
+import { initializeMoralis } from './moralis'
 import { scheduleProfileStatsCalculation } from './scheduler/profile_stats'
 import { scheduleNFTCollectionAssetsUpdate } from './scheduler/nft_collection'
 import { DefaultDIDAdapter, DIDBackend } from '@elastosfoundation/did-js-sdk'
@@ -158,6 +159,7 @@ app.listen(port, () => {
   console.log(`Profile Api Service listening on port ${port}!`)
 
   initializeGlobalData()
+  initializeMoralis()
   scheduleProfileStatsCalculation()
   scheduleNFTCollectionAssetsUpdate()
 
