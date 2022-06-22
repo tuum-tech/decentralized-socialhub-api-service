@@ -142,8 +142,16 @@ NFTCollectionRouter.get('/ethaddress', async (req, res) => {
 });
 
 NFTCollectionRouter.get('/escaddress', async (req, res) => {
+  const address = req.query.address as string;
+  if (!address) {
+    returnSuccess(res, {
+      assets: [],
+      total: 0,
+      totalPage: 0
+    });
+    return;
+  }
   try {
-    const address = req.query.address as string;
     const page: number = +req.query.page;
     const count = 9;
     const elacityAPIUrl = 'https://ela.city/api/nftitems/fetchTokens'
