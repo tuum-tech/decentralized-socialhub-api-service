@@ -104,34 +104,41 @@ NFTCollectionRouter.get('/ethaddress', async (req, res) => {
         `${chain} is not currently supported. The valid chains are ${supportedChains}`
       )
 
-    // get NFTs for given address
-    const options = {
-      chain: getSupportedChain(chain),
-      address,
-    }
+    // tslint:disable-next-line:no-console
+    console.log(
+      `Using Moralis API to retrieve NFT assets for the address '${address}' on the '${chain}' network`
+    )
 
-    // get NFTs for current user on Mainnet
-    let userEthNFTs = await Moralis.Web3API.account.getNFTs(options)
-    while (userEthNFTs.next) {
-      userEthNFTs = await userEthNFTs.next()
-    }
-
-    const assets: any[] = userEthNFTs.result.map((asset: any) => {
-      if (typeof asset === 'object') {
-        const name = `${asset.name} #${asset.token_id}`
-        let imageUrl = ''
-        const metadata = JSON.parse(asset.metadata)
-        if (metadata !== null) {
-          imageUrl = metadata.image
-        }
-        return {
-          ...asset,
-          name,
-          image_url: imageUrl,
-          owner: asset.owner_of,
-        }
-      }
-    })
+    let cursor = null
+    let assets: any[] = []
+    do {
+      const response: any = await Moralis.Web3API.account.getNFTs({
+        address,
+        chain: getSupportedChain(chain),
+        limit: 100,
+        cursor,
+      })
+      assets = assets.concat(
+        response.result.map((asset: any) => {
+          if (typeof asset === 'object') {
+            const name = `${asset.name} #${asset.token_id}`
+            let imageUrl = ''
+            const metadata = JSON.parse(asset.metadata)
+            if (metadata !== null) {
+              imageUrl = metadata.image
+            }
+            return {
+              ...asset,
+              name,
+              image_url: imageUrl,
+              owner: asset.owner_of,
+            }
+          }
+        })
+      )
+      cursor = response.cursor
+      await new Promise((f) => setTimeout(f, 1000))
+    } while (cursor !== '' && cursor != null)
 
     returnSuccess(res, {
       assets,

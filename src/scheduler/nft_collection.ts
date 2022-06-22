@@ -52,36 +52,52 @@ const getAssetsUsingMoralisAPI = async (
     return []
   }
 
-  // get NFT owners for a given contract address
-  const options = {
-    chain: getSupportedChain(chain),
-    address,
-  }
-
   // tslint:disable-next-line:no-console
   console.log(`Using Moralis API for the collection '${slug}'`)
 
-  let nftOwners = await Moralis.Web3API.token.getNFTOwners(options)
-  while (nftOwners.next) {
-    nftOwners = await nftOwners.next()
-  }
+  let cursor = null
+  let assets: any[] = []
+  do {
+    const response: any = await Moralis.Web3API.token.getNFTOwners({
+      address,
+      chain: getSupportedChain(chain),
+      limit: 100,
+      cursor,
+    })
+    // tslint:disable-next-line:no-console
+    console.log(
+      `Using Moralis API for the collection '${slug}': Got page ${
+        response.page
+      } of ${Math.ceil(response.total / response.page_size)}, ${
+        response.total
+      } total`
+    )
+    assets = assets.concat(
+      response.result.map((asset: any) => {
+        if (typeof asset === 'object') {
+          const name = `${asset.name} #${asset.token_id}`
+          let imageUrl = ''
+          const metadata = JSON.parse(asset.metadata)
+          if (metadata !== null) {
+            imageUrl = metadata.image
+          }
+          return {
+            name,
+            image_url: imageUrl,
+            owner: asset.owner_of,
+            last_sale: asset.last_sale,
+          }
+        }
+      })
+    )
+    cursor = response.cursor
+    await new Promise((f) => setTimeout(f, 1000))
+  } while (cursor !== '' && cursor != null)
 
-  const assets: any[] = nftOwners.result.map((asset: any) => {
-    if (typeof asset === 'object') {
-      const name = `${asset.name} #${asset.token_id}`
-      let imageUrl = ''
-      const metadata = JSON.parse(asset.metadata)
-      if (metadata !== null) {
-        imageUrl = metadata.image
-      }
-      return {
-        name,
-        image_url: imageUrl,
-        owner: asset.owner_of,
-        last_sale: asset.last_sale,
-      }
-    }
-  })
+  // tslint:disable-next-line:no-console
+  console.log(
+    `Using Moralis API for the collection '${slug}': Total NFTs=${assets.length}`
+  )
 
   return assets
 }
