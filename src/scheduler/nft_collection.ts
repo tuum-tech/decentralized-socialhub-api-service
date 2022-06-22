@@ -91,7 +91,7 @@ const getAssetsUsingMoralisAPI = async (
       })
     )
     cursor = response.cursor
-    await new Promise((f) => setTimeout(f, 1000))
+    await new Promise((f) => setTimeout(f, 3000))
   } while (cursor !== '' && cursor != null)
 
   // tslint:disable-next-line:no-console
@@ -158,7 +158,7 @@ const getAssetsUsingOpenseaAPI = async (slug: string) => {
   return assets
 }
 export function scheduleNFTCollectionAssetsUpdate() {
-  cron.schedule('*/10 * * * *', async () => {
+  cron.schedule('*/30 * * * *', async () => {
     const hiveClient = await getHiveClient()
     const response: IRunScriptResponse<any> =
       await hiveClient.Scripting.RunScript<any>({
