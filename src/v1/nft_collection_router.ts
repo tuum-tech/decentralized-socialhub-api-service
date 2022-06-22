@@ -1,40 +1,42 @@
-import express from "express";
-import _ from "lodash";
+import express from 'express'
+import _ from 'lodash'
 import {
   IRunScriptData,
   IRunScriptResponse,
-} from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
-import { returnSuccess, getHiveClient, returnError } from "./common";
+} from '@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service'
+import { returnSuccess, getHiveClient, returnError } from './common'
+import { getSupportedChain, supportedChains } from '../moralis'
+import Moralis from 'moralis/node'
 
-const NFTCollectionRouter = express.Router();
+const NFTCollectionRouter = express.Router()
 
-NFTCollectionRouter.get("/assets", async (req, res) => {
+NFTCollectionRouter.get('/assets', async (req, res) => {
   // tslint:disable-next-line:no-console
-  console.info("Executing: /v1/nft_collection_router/assets");
+  console.info('Executing: /v1/nft_collection_router/assets')
 
-  const { collection_id, offset, limit } = req.query;
-  const hiveClient = await getHiveClient();
+  const { collection_id, offset, limit } = req.query
+  const hiveClient = await getHiveClient()
   const response: IRunScriptResponse<any> =
     await hiveClient.Scripting.RunScript<any>({
-      name: "get_nft_collection_assets",
+      name: 'get_nft_collection_assets',
       params: { guid: JSON.parse(collection_id as string) },
       context: {
         target_did: `${process.env.TUUMVAULT_DID}`,
         target_app_did: `${process.env.TUUMVAULT_DID}`,
       },
-    });
-  if (response.response._status !== "OK") {
-    returnError(res, "Tuum tech vault script error");
+    })
+  if (response.response._status !== 'OK') {
+    returnError(res, 'Tuum tech vault script error')
   }
-  const collections = response.response.get_nft_collection_assets.items;
+  const collections = response.response.get_nft_collection_assets.items
 
   if (collections.length > 0) {
-    const { assets } = collections[0];
+    const { assets } = collections[0]
 
-    const groups = _.groupBy(assets, "name");
+    const groups = _.groupBy(assets, 'name')
     const flattenAssets = Object.keys(groups).map(
       (name: string) => groups[name][0]
-    );
+    )
 
     returnSuccess(res, {
       totalCount: flattenAssets.length,
@@ -44,72 +46,80 @@ NFTCollectionRouter.get("/assets", async (req, res) => {
         offset as any,
         parseInt(offset as string, 10) + parseInt(limit as string, 10)
       ),
-    });
+    })
   } else {
-    returnError(res, "No collection exist");
+    returnError(res, 'No collection exist')
   }
-});
+})
 
-NFTCollectionRouter.get("/owners", async (req, res) => {
+NFTCollectionRouter.get('/owners', async (req, res) => {
   // tslint:disable-next-line:no-console
-  console.info("Executing: /v1/nft_collection_router/owners");
+  console.info('Executing: /v1/nft_collection_router/owners')
 
-  const { collection_id, offset, limit } = req.query;
-  const hiveClient = await getHiveClient();
+  const { collection_id, offset, limit } = req.query
+  const hiveClient = await getHiveClient()
   const response: IRunScriptResponse<any> =
     await hiveClient.Scripting.RunScript<any>({
-      name: "get_nft_collection_assets",
+      name: 'get_nft_collection_assets',
       params: { guid: JSON.parse(collection_id as string) },
       context: {
         target_did: `${process.env.TUUMVAULT_DID}`,
         target_app_did: `${process.env.TUUMVAULT_DID}`,
       },
-    });
-  if (response.response._status !== "OK") {
-    returnError(res, "Tuum tech vault script error");
+    })
+  if (response.response._status !== 'OK') {
+    returnError(res, 'Tuum tech vault script error')
   }
-  const collections = response.response.get_nft_collection_assets.items;
+  const collections = response.response.get_nft_collection_assets.items
   if (collections.length > 0) {
-    const { assets } = collections[0];
+    const { assets } = collections[0]
     const owners = [...new Set(assets.map((asset: any) => asset.owner))].filter(
       (owner) => owner
-    );
+    )
     returnSuccess(res, {
       totalCount: owners.length,
       offset,
       limit,
       owners:
         parseInt(offset as string, 10) !== 0 ||
-          parseInt(limit as string, 10) !== 0
+        parseInt(limit as string, 10) !== 0
           ? owners.slice(
-            offset as any,
-            parseInt(offset as string, 10) + parseInt(limit as string, 10)
-          )
+              offset as any,
+              parseInt(offset as string, 10) + parseInt(limit as string, 10)
+            )
           : owners,
-    });
+    })
   } else {
-    returnError(res, "No collection exist");
+    returnError(res, 'No collection exist')
   }
-});
+})
 
 NFTCollectionRouter.get('/ethaddress', async (req, res) => {
   try {
-    const count = 9;
-    const address = req.query.address as string;
-    const moralisAPIUrl = `https://deep-index.moralis.io/api/v2/${address}/nft?format=decimal&cursor=${req.query.cursor}&limit=${count}`
-    const result = await fetch(moralisAPIUrl, {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        'X-API-Key': process.env.MORALIS_API_KEY,
-      },
-    })
+    const address = req.query.address as string
+    const chain = req.query.chain as string
+    if (supportedChains.indexOf(chain) === -1)
+      returnError(
+        res,
+        `${chain} is not currently supported. The valid chains are ${supportedChains}`
+      )
+
+    // tslint:disable-next-line:no-console
+    console.log(
+      `Using Moralis API to retrieve NFT assets for the address '${address}' on the '${chain}' network`
+    )
+
+    let cursor = null
     let assets: any[] = []
-    const { status, statusText } = result
-    const data = await result.json()
-    if (status === 200 && statusText === 'OK') {
+    do {
+      const response: any = await Moralis.Web3API.account.getNFTs({
+        address,
+        chain: getSupportedChain(chain),
+        limit: 100,
+        cursor,
+      })
       assets = assets.concat(
-        data.result.map((asset: any) => {
+        response.result.map((asset: any) => {
           if (typeof asset === 'object') {
             const name = `${asset.name} #${asset.token_id}`
             let imageUrl = ''
@@ -126,20 +136,20 @@ NFTCollectionRouter.get('/ethaddress', async (req, res) => {
           }
         })
       )
-    }
+      cursor = response.cursor
+      await new Promise((f) => setTimeout(f, 1000))
+    } while (cursor !== '' && cursor != null)
+
     returnSuccess(res, {
       assets,
-      total: data.total,
-      page: data.page,
-      page_size: data.page_size,
-      cursor: data.cursor
-    });
+      total: assets.length,
+    })
   } catch (err) {
     // tslint:disable-next-line:no-console
-    console.info('nft ethaddress error===>', err);
-    returnError(res, err.message);
+    console.info('nft ethaddress error===>', err)
+    returnError(res, err.message)
   }
-});
+})
 
 NFTCollectionRouter.get('/escaddress', async (req, res) => {
   const address = req.query.address as string;
@@ -161,12 +171,12 @@ NFTCollectionRouter.get('/escaddress', async (req, res) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        type: "single",
-        sortby: "createdAt$desc",
+        type: 'single',
+        sortby: 'createdAt$desc',
         filterby: [],
         address,
         from: page * count,
-        count
+        count,
       }),
     })
     const { status, statusText } = result
@@ -181,9 +191,9 @@ NFTCollectionRouter.get('/escaddress', async (req, res) => {
           owner: asset.owner?.address,
           last_sale: asset.price
             ? {
-              price: asset.price,
-              token: 'ELA',
-            }
+                price: asset.price,
+                token: 'ELA',
+              }
             : null,
         }))
       }
@@ -191,13 +201,13 @@ NFTCollectionRouter.get('/escaddress', async (req, res) => {
     returnSuccess(res, {
       assets,
       total: data.data.total,
-      totalPage: Math.ceil(data.data.total / 9)
-    });
+      totalPage: Math.ceil(data.data.total / 9),
+    })
   } catch (err) {
     // tslint:disable-next-line:no-console
-    console.info('nft escaddress error===>', err);
-    returnError(res, err.message);
+    console.info('nft escaddress error===>', err)
+    returnError(res, err.message)
   }
-});
+})
 
-export default NFTCollectionRouter;
+export default NFTCollectionRouter
