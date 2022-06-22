@@ -140,6 +140,10 @@ NFTCollectionRouter.get('/ethaddress', async (req, res) => {
       await new Promise((f) => setTimeout(f, 1000))
     } while (cursor !== '' && cursor != null)
 
+    // tslint:disable-next-line:no-console
+    console.log(
+      `Address: ${address} - Chain: ${chain}, No of assets: ${assets.length}`
+    )
     returnSuccess(res, {
       assets,
       total: assets.length,
@@ -154,6 +158,23 @@ NFTCollectionRouter.get('/ethaddress', async (req, res) => {
 NFTCollectionRouter.get('/escaddress', async (req, res) => {
   try {
     const address = req.query.address as string
+
+    // tslint:disable-next-line:no-console
+    console.log(
+      `Using Elacity API to retrieve NFT assets for the address '${address}' on the 'ESC' network`
+    )
+    let assets: any = []
+    if (address.replace(/\s/g, '') === '') {
+      // tslint:disable-next-line:no-console
+      console.log(`Address: '${address}' is empty`)
+      returnSuccess(res, {
+        assets,
+        total: 0,
+        totalPage: 0,
+      })
+      return
+    }
+
     const page: number = +req.query.page
     const count = 9
     const elacityAPIUrl = 'https://ela.city/api/nftitems/fetchTokens'
@@ -172,7 +193,7 @@ NFTCollectionRouter.get('/escaddress', async (req, res) => {
       }),
     })
     const { status, statusText } = result
-    let assets = []
+
     const data = await result.json()
     if (status === 200 && statusText === 'OK') {
       if (data.status === 'success') {
@@ -190,6 +211,11 @@ NFTCollectionRouter.get('/escaddress', async (req, res) => {
         }))
       }
     }
+    // tslint:disable-next-line:no-console
+    console.log(
+      `Address: ${address} - Chain: 'ESC', No of assets: ${assets.length}`
+    )
+
     returnSuccess(res, {
       assets,
       total: data.data.total,
