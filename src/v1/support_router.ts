@@ -100,15 +100,13 @@ supportRouter.get('/version/releaseNotes', async (req, res) => {
   // TODO connect DB and get data by version
 
   const response = {
-    latestVersion: version === 'latest' ? '1.26.2' : version, // TODO
+    latestVersion: version === 'latest' ? '1.26.3' : version,
     releaseNotes: [
-      'Updated the way "Request Community Space" feature works. Users can now request any NFT collection community spaces to be added with just the smart contract address and we support 3 chains - Elastos, Ethereum and Polygon. NFT Collection spaces can be automatically added now with this new update',
-      'Added the ability to change the category of private spaces. The new categories are: Personal Group, Creator, Business, DAO, Personal NFT Group, Other',
-      'Updated the Profile API service to get the total number of users on Profile more efficiently and quickly: https://profile-api.tuum.tech/public_stats_router/get_new_users_by_date/all',
-      'Users now get notified whenever there is a new Profile release with the release notes. Users will need to relogin each time there is a new update to Profile to resolve any issues they may encounter with the new release',
-      'Optimized the Profile code to login much faster than before as we are now executing several items in parallel. We will continue to optimize the Profile code in the future',
-      'Updated Connections page to make it mobile friendly',
-      'Updated Activities page to make it mobile friendly',
+      'Added a new feature on dashboard where users can view their NFTs for Elastos Smart Contract Chain and Ethereum',
+      'Fixed a bug whereby /support-forum page was not displaying any github issues',
+      'Removed all the Save buttons from Profile manager page and improved the UI to make interacting with different sections very intuitive. Data is saved automatically now',
+      'Updated layout of settings page to make it mobile friendly',
+      'Updated activities page to make it mobile friendly',
     ],
     videoUpdateUrl: 'https://www.youtube.com/embed/1LlMPXi-7J4',
   }
@@ -116,6 +114,14 @@ supportRouter.get('/version/releaseNotes', async (req, res) => {
 })
 
 /*
+v1.26.2
+      'Updated the way "Request Community Space" feature works. Users can now request any NFT collection community spaces to be added with just the smart contract address and we support 3 chains - Elastos, Ethereum and Polygon. NFT Collection spaces can be automatically added now with this new update',
+      'Added the ability to change the category of private spaces. The new categories are: Personal Group, Creator, Business, DAO, Personal NFT Group, Other',
+      'Updated the Profile API service to get the total number of users on Profile more efficiently and quickly: https://profile-api.tuum.tech/public_stats_router/get_new_users_by_date/all',
+      'Users now get notified whenever there is a new Profile release with the release notes. Users will need to relogin each time there is a new update to Profile to resolve any issues they may encounter with the new release',
+      'Optimized the Profile code to login much faster than before as we are now executing several items in parallel. We will continue to optimize the Profile code in the future',
+      'Updated Connections page to make it mobile friendly',
+      'Updated Activities page to make it mobile friendly'
 v1.26.1:
       'Added social links and posts feature to private spaces and Welcome to Profile space(previously, these features only worked for NFT Collection spaces)',
       'Created a generic tooling library to store stuff like Logger, CacheManager, ConfigurationManager, Base64/SHA256, FileSystem, HttpClient, etc. This removes the duplicated code we have in different projects also introduces standards in some basic elements. The code is open source at https://github.com/tuum-tech/Elastos.Common.JS.Tools',
