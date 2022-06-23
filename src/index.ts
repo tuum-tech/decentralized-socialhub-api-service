@@ -33,6 +33,9 @@ const app = express()
 
 const port = process.env.SERVER_PORT || 8080
 
+const runCronjobs =
+  process.env.RUN_CRONJOBS.toLowerCase() === 'false' ? false : true
+
 app.use(express.json({ limit: '32mb' }))
 app.use(
   express.urlencoded({
@@ -160,8 +163,10 @@ app.listen(port, () => {
 
   initializeGlobalData()
   initializeMoralis()
-  scheduleProfileStatsCalculation()
-  scheduleNFTCollectionAssetsUpdate()
+  if (runCronjobs) {
+    scheduleProfileStatsCalculation()
+    scheduleNFTCollectionAssetsUpdate()
+  }
 
   // initialize DIDBackend
   DIDBackend.initialize(new DefaultDIDAdapter('mainnet'))
