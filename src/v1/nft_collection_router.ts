@@ -98,19 +98,30 @@ NFTCollectionRouter.get('/ethaddress', async (req, res) => {
   try {
     const address = req.query.address as string
     const chain = req.query.chain as string
-    if (supportedChains.indexOf(chain) === -1)
-      returnError(
-        res,
-        `${chain} is not currently supported. The valid chains are ${supportedChains}`
-      )
 
     // tslint:disable-next-line:no-console
     console.log(
       `Using Moralis API to retrieve NFT assets for the address '${address}' on the '${chain}' network`
     )
 
+    let assets: any = []
+    if (address.replace(/\s/g, '') === '') {
+      // tslint:disable-next-line:no-console
+      console.log(`Address: '${address}' is empty`)
+      returnSuccess(res, {
+        assets,
+        total: 0,
+        totalPage: 0,
+      })
+      return
+    }
+
+    if (supportedChains.indexOf(chain) === -1)
+      returnError(
+        res,
+        `${chain} is not currently supported. The valid chains are ${supportedChains}`
+      )
     let cursor = null
-    let assets: any[] = []
     do {
       const response: any = await Moralis.Web3API.account.getNFTs({
         address,
