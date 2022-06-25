@@ -5,7 +5,9 @@ import {
   IRunScriptResponse,
 } from "@elastosfoundation/elastos-hive-js-sdk/dist/Services/Scripting.Service";
 import { returnSuccess, getHiveClient, returnError } from "./common";
+import { getAssetsUsingElacityAPI, getAssetsUsingMoralisAPI, getAssetsUsingOpenseaAPI } from './../scheduler/nft_collection'
 
+// import Moralis from 'moralis/node'
 const NFTCollectionRouter = express.Router();
 
 NFTCollectionRouter.get("/assets", async (req, res) => {
@@ -89,6 +91,51 @@ NFTCollectionRouter.get("/owners", async (req, res) => {
     });
   } else {
     returnError(res, "No collection exist");
+  }
+});
+
+NFTCollectionRouter.get("/validateform", async (req, res) => {
+  const { forminfo } = req.query;
+  const data = JSON.parse(forminfo as string);
+  if(data.network_type === 'eth') {
+    if(!data.isOpenseaCollection) {
+      const assets = await getAssetsUsingMoralisAPI(data.contract_address, 'ethereum', data.slug);
+      if(assets.length > 0) {
+        returnSuccess(res, 'success');
+      } else {
+        returnError(res, 'Smart contract address or slug does not exist on ethereum net.');
+      }
+    } else {
+      const assets = await getAssetsUsingOpenseaAPI(data.slug);
+      if(assets.length > 0) {
+        returnSuccess(res, 'success');
+      } else {
+        returnError(res, 'Smart contract address or slug does not exist on opensea.io.');
+      }
+    }
+  } else if (data.network_type === 'polygon') {
+    if(!data.isOpenseaCollection) {
+      const assets = await getAssetsUsingMoralisAPI(data.contract_address, 'polygon', data.slug);
+      if(assets.length > 0) {
+        returnSuccess(res, 'success');
+      } else {
+        returnError(res, 'Smart contract address or slug does not exist on polygon net.');
+      }
+    } else {
+      const assets = await getAssetsUsingOpenseaAPI(data.slug);
+      if(assets.length > 0) {
+        returnSuccess(res, 'success');
+      } else {
+        returnError(res, 'Smart contract address or slug does not exist on opensea.io.');
+      }
+    }
+  } else {
+    const assets = await getAssetsUsingElacityAPI(data.contract_address, data.collection_slug);
+    if(assets.length > 0) {
+      returnSuccess(res, 'success');
+    } else {
+      returnError(res, 'Smart contract address or slug does not exist.');
+    }
   }
 });
 
