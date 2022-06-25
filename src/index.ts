@@ -21,6 +21,7 @@ import {
 } from './v1/common'
 import crypto from 'crypto'
 import { initializeGlobalData } from './global_data'
+import { initializeMoralis } from './moralis'
 import { scheduleProfileStatsCalculation } from './scheduler/profile_stats'
 import { scheduleNFTCollectionAssetsUpdate } from './scheduler/nft_collection'
 import { DefaultDIDAdapter, DIDBackend } from '@elastosfoundation/did-js-sdk'
@@ -31,6 +32,9 @@ dotenv.config()
 const app = express()
 
 const port = process.env.SERVER_PORT || 8080
+
+const runCronjobs =
+  process.env.RUN_CRONJOBS.toLowerCase() === 'false' ? false : true
 
 app.use(express.json({ limit: '32mb' }))
 app.use(
@@ -158,8 +162,11 @@ app.listen(port, () => {
   console.log(`Profile Api Service listening on port ${port}!`)
 
   initializeGlobalData()
-  scheduleProfileStatsCalculation()
-  scheduleNFTCollectionAssetsUpdate()
+  initializeMoralis()
+  if (runCronjobs) {
+    scheduleProfileStatsCalculation()
+    scheduleNFTCollectionAssetsUpdate()
+  }
 
   // initialize DIDBackend
   DIDBackend.initialize(new DefaultDIDAdapter('mainnet'))

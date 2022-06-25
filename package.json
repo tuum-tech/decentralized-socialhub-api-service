@@ -50,6 +50,7 @@
     "googleapis": "^68.0.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
+    "moralis": "^1.8.0",
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
