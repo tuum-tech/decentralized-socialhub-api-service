@@ -7,7 +7,7 @@ import elacityAPI from './../elacity_api'
 import openseaAPI from './../moralis_api/plugins/opensea'
 
 export function scheduleNFTCollectionAssetsUpdate() {
-  cron.schedule('*/1 * * * *', async () => {
+  cron.schedule('*/10 * * * *', async () => {
     const hiveClient = await getHiveClient()
     const response: IRunScriptResponse<any> =
       await hiveClient.Scripting.RunScript<any>({
