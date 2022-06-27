@@ -100,7 +100,7 @@ supportRouter.get('/version/releaseNotes', async (req, res) => {
   // TODO connect DB and get data by version
 
   const response = {
-    latestVersion: version === 'latest' ? '1.26.3' : version,
+    latestVersion: version === 'latest' ? '1.27.0' : version,
     releaseNotes: [
       'Added a new feature on dashboard where users can view their NFTs for Elastos Smart Contract Chain and Ethereum',
       'Fixed a bug whereby /support-forum page was not displaying any github issues',
@@ -114,6 +114,13 @@ supportRouter.get('/version/releaseNotes', async (req, res) => {
 })
 
 /*
+v1.26.3
+      'Added a new feature on dashboard where users can view their NFTs for Elastos Smart Contract Chain and Ethereum',
+      'Fixed a bug whereby /support-forum page was not displaying any github issues',
+      'Removed all the Save buttons from Profile manager page and improved the UI to make interacting with different sections very intuitive. Data is saved automatically now',
+      'Updated layout of settings page to make it mobile friendly',
+      'Updated activities page to make it mobile friendly',
+
 v1.26.2
       'Updated the way "Request Community Space" feature works. Users can now request any NFT collection community spaces to be added with just the smart contract address and we support 3 chains - Elastos, Ethereum and Polygon. NFT Collection spaces can be automatically added now with this new update',
       'Added the ability to change the category of private spaces. The new categories are: Personal Group, Creator, Business, DAO, Personal NFT Group, Other',
