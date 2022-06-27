@@ -16,7 +16,7 @@ export const supportedChains = [
 
 export function getSupportedChain(chain: string): any {
   let result: any
-  switch (chain) {
+  switch (chain.toLowerCase()) {
     case 'eth':
     case 'ethereum':
     case 'mainnet': {

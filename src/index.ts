@@ -21,7 +21,7 @@ import {
 } from './v1/common'
 import crypto from 'crypto'
 import { initializeGlobalData } from './global_data'
-import { initializeMoralis } from './moralis'
+import { initializeMoralis } from './moralis_api'
 import { scheduleProfileStatsCalculation } from './scheduler/profile_stats'
 import { scheduleNFTCollectionAssetsUpdate } from './scheduler/nft_collection'
 import { DefaultDIDAdapter, DIDBackend } from '@elastosfoundation/did-js-sdk'
