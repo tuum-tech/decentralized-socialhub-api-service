@@ -105,6 +105,7 @@ supportRouter.get('/version/releaseNotes', async (req, res) => {
       'New onboarding and tutorial design integration with the removal of login with mnemonics(will only have Essentials login from now on). This is a major update that includes changes to the entirety of the logging mechanism of Profile with regards to Signing in using Essentials, Recover account using mnemonics and Creating a new user. This eliminates a security risk posed by previous method of logging in using mnemonics as this means even the browser does not store any sensitive data from now on',
       'Updated Explore > People page to only show users that have finished the new onboarding tutorial. We recommend everyone using Profile to login to Profile to complete the new onboarding process so you can be seen on Explore > People page',
       'Updated the "Request Community Space" feature by validating smart contract address and automated the creation of new NFT collection spaces',
+      'Refactored code for dashboard page to optimize the loading times',
       'Disabled the upload of avatar and cover image until the new onboarding tutorial is completed by the user',
       'Disabled verification requests until the new onboarding tutorial is completed by the user',
       'Now displaying a placeholder for NFTs on both Dashboard > NFTs and NFT collection spaces if the image url stored on the blockchain cannot be retrieved',
