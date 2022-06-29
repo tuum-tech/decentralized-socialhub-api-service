@@ -102,11 +102,17 @@ supportRouter.get('/version/releaseNotes', async (req, res) => {
   const response = {
     latestVersion: version === 'latest' ? '1.27.0' : version,
     releaseNotes: [
-      'Added a new feature on dashboard where users can view their NFTs for Elastos Smart Contract Chain and Ethereum',
-      'Fixed a bug whereby /support-forum page was not displaying any github issues',
-      'Removed all the Save buttons from Profile manager page and improved the UI to make interacting with different sections very intuitive. Data is saved automatically now',
-      'Updated layout of settings page to make it mobile friendly',
-      'Updated activities page to make it mobile friendly',
+      'New onboarding and tutorial design integration with the removal of login with mnemonics(will only have Essentials login from now on). This is a major update that includes changes to the entirety of the logging mechanism of Profile with regards to Signing in using Essentials, Recover account using mnemonics and Creating a new user. This eliminates a security risk posed by previous method of logging in using mnemonics as this means even the browser does not store any sensitive data from now on',
+      'Updated Explore > People page to only show users that have finished the new onboarding tutorial. We recommend everyone using Profile to login to Profile to complete the new onboarding process so you can be seen on Explore > People page',
+      'Updated the "Request Community Space" feature by validating smart contract address and automated the creation of new NFT collection spaces',
+      'Disabled the upload of avatar and cover image until the new onboarding tutorial is completed by the user',
+      'Disabled verification requests until the new onboarding tutorial is completed by the user',
+      'Now displaying a placeholder for NFTs on both Dashboard > NFTs and NFT collection spaces if the image url stored on the blockchain cannot be retrieved',
+      'Improved error handling so the user gets informed anytime there is any error executing scripts on user hive node',
+      'Fixed a bug on Connections page where the mututal follow page would sometimes not display any users',
+      'Fixed a bug whereby the NFTs were not displaying correctly on Dashboard > NFTs',
+      'Fixed a bug whereby the Follow and Unfollow was not working properly from public profiles',
+      'Updated Profile API service to use Moralis SDK rather than Moralis REST API',
     ],
     videoUpdateUrl: 'https://www.youtube.com/embed/1LlMPXi-7J4',
   }
